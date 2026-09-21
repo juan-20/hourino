@@ -1,0 +1,33 @@
+{
+  "name": "server",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsdown",
+    "check-types": "tsc --noEmit",
+    "compile": "bun build --compile --no-compile-autoload-dotenv --minify --sourcemap --bytecode ./src/index.ts --outfile server",
+    "start": "bun run dist/index.mjs",
+    "dev:bare": "bun run --hot src/index.ts",
+    "env:generate": "varlock codegen",
+    "auth:generate": "varlock run -- bun x auth@latest generate --config src/services.ts --output ../../packages/db/src/schema/auth.ts --yes"
+  },
+  "dependencies": {
+    "@fastify/cors": "^11.3.0",
+    "@hono/trpc-server": "^0.4.2",
+    "@hourino/api": "workspace:*",
+    "@hourino/auth": "workspace:*",
+    "@hourino/db": "workspace:*",
+    "@trpc/server": "catalog:",
+    "better-auth": "catalog:",
+    "evlog": "^2.28.1",
+    "fastify": "^5.12.3",
+    "varlock": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@hourino/config": "workspace:*",
+    "@types/bun": "catalog:",
+    "tsdown": "^0.23.0",
+    "typescript": "catalog:"
+  }
+}

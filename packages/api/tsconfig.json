@@ -1,0 +1,7 @@
+{
+  "extends": "@hourino/config/tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "strictNullChecks": true
+  }
+}
