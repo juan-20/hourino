@@ -27,9 +27,12 @@ There is no test suite/framework configured in this repo yet.
 
 ### Database
 
-- Schema lives in `packages/db/src/schema/`; `packages/db/src/schema/auth.ts` is generated (don't hand-edit — regenerate with `bun run auth:generate`).
-- Migrations are written to `packages/db/src/migrations` and are checked in; `bun run db:generate` creates new migration SQL from schema changes, `bun run db:migrate` applies them, `bun run db:push` pushes schema directly (dev only).
+- Schema lives in `packages/db/src/schema/`; `packages/db/src/schema/auth.ts` is generated (don't hand-edit — regenerate with `bun run auth:generate`). Domain schema (`projects.ts`, `time-entries.ts`, `report-runs.ts`, `monthly-summaries.ts`) is hand-written; all re-exported from `schema/index.ts` and wired into `packages/db/src/relations.ts`.
+- Migrations are written to `packages/db/src/migrations` and are checked in; `bun run db:generate` creates new migration SQL from schema changes, `bun run db:migrate` applies them, `bun run db:push` pushes schema directly (dev only). The installed `drizzle-kit` (1.0.0-rc.4, pinned via bun catalog) uses **folder-based migrations** — each migration is `src/migrations/<timestamp>_<slug>/{migration.sql,snapshot.json}`, chained via `prevIds` inside `snapshot.json`, not the older flat `0000_name.sql` + `meta/_journal.json` layout. Use `drizzle-kit generate --custom --name=<name>` for hand-written SQL migrations (partitioning DDL, PL/pgSQL functions) that `drizzle-kit` can't diff from the schema DSL.
+- `db:generate`/`db:migrate` validate `DATABASE_URL` even though `generate` never opens a connection — when running them outside an active `bunx alchemy dev` session (which injects the real value), pass a placeholder inline, e.g. `DATABASE_URL="postgres://placeholder:placeholder@localhost:5432/placeholder" bun run db:generate`.
 - Local dev does **not** need a copied `DATABASE_URL`: Alchemy provisions the Neon database and injects credentials into the running app as part of the same deploy/dev stack (see `packages/infra/alchemy.run.ts`).
+- `time_entries` is **physically RANGE-partitioned by `work_date`** (monthly partitions) — `drizzle-kit` has no DSL for `PARTITION BY` and cannot diff a partitioned table, so its schema file (`schema/time-entries.ts`) declares columns only, for typed query-builder/relations support (`db.query.timeEntries.*`). All indexes, the composite `(id, work_date)` primary key, and the `CHECK` constraint are hand-written SQL migrations. Never add `.primaryKey()`/`index()` to that schema file, and never run `bun run db:push` against it — push does live introspection and will try to "fix" the partitioning it doesn't understand. Column changes need a hand-written `ALTER` migration mirrored into the schema file.
+- Two SQL functions support the partitioned model: `maintain_time_entries_partitions(months_ahead)` (idempotent monthly partition creation) and `refresh_monthly_summaries(target_month)` (rebuilds the `monthly_summaries` read-model table via `GROUPING SETS`, soft-delete-aware). Neither is scheduled yet — no cron/queue infra exists in this repo; invoke manually until the "Phase 4: CRONs & Background Workers" work (BullMQ/Redis or pg-boss, `apps/worker`) lands and calls them from its monthly fan-out job.
 
 ### Environment variables (Varlock)
 
@@ -73,6 +76,10 @@ Fastify (`apps/server/src/index.ts`) registers two things at the HTTP layer:
 2. `/trpc` — `fastifyTRPCPlugin` serving `appRouter` from `@hourino/api`, with `createContext` resolving auth per request
 
 The web app talks to `/trpc` via `apps/web/src/utils/trpc.ts` (a `createTRPCClient` + `createTRPCOptionsProxy` wired into TanStack Query, `credentials: "include"` for cookies) and to Better Auth via `apps/web/src/lib/auth-client.ts`. `ENV.VITE_SERVER_URL` (from `env.public.ts`) is the server origin, supplied by Alchemy at deploy time (Cloudflare Worker env → Vite build).
+
+### Domain model (time tracking)
+
+Aggregate roots: `User` (Better Auth's `user`, `text` id), `Project` (owned by a user), `TimeEntry` (belongs to a user + project, partitioned — see Database above), `ReportRun` (one per user+period, unique-constrained). `monthly_summaries` is a derived read-model table, not an aggregate — it's rebuilt wholesale per month by `refresh_monthly_summaries()` rather than written to directly. No `packages/api` router exists yet for these tables; `Context.db` is already threaded through `publicProcedure`/`protectedProcedure` and ready for one.
 
 ### Logging
 
