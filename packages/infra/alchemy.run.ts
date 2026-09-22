@@ -74,11 +74,16 @@ export const observability = Effect.gen(function* () {
 	// evlog's Axiom drain already degrades gracefully with no dataset/apiKey
 	// (see the "[evlog/axiom] Missing dataset or apiKey" warning). A failure
 	// provisioning it (e.g. an Axiom-side account/API issue) must never block
-	// deploying the actual server/web resources.
-	Effect.orElseSucceed(() => ({
-		dataset: undefined,
-		runtimeEnv: {},
-	}))
+	// deploying the actual server/web resources. `catchCause`, not
+	// `orElseSucceed`, is required here: Axiom's BadRequest surfaces as a
+	// defect (an unexpected thrown error), not a typed Effect failure, and
+	// `orElseSucceed` explicitly does not recover from defects.
+	Effect.catchCause(() =>
+		Effect.succeed({
+			dataset: undefined,
+			runtimeEnv: {},
+		})
+	)
 );
 
 export const observabilityEnv = observability.pipe(
