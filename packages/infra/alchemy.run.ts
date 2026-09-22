@@ -89,16 +89,25 @@ export const server = Prisma.Compute(
 		const resolvedObservabilityEnv = yield* observabilityEnv;
 
 		return {
+			// NOT `{ framework: "bun", type: "auto" }` — that auto-detection
+			// strategy runs `bun build` via `shell: true`, quoting the entrypoint
+			// path with POSIX single-quote escaping (`shellQuote` in Alchemy's own
+			// source). On Windows, `shell: true` spawns cmd.exe, which does not
+			// strip single quotes, so `bun` receives the path with literal quote
+			// characters attached and fails instantly. An explicit `command` here
+			// bypasses that broken strategy — this literal string has no quoting
+			// for cmd.exe to mishandle.
 			build: {
-				framework: "bun",
-				type: "auto",
+				command:
+					"bun build src/index.ts --target bun --outdir dist --sourcemap=external",
+				entrypoint: "index.js",
+				outdir: "dist",
 			},
 			destroyOldDeployment: true,
 			dev: {
 				command: "bun run dev:bare",
 				port: 3000,
 			},
-			entrypoint: "src/index.ts",
 			env: {
 				...resolvedDatabaseEnv,
 				BETTER_AUTH_SECRET: Config.Redacted("BETTER_AUTH_SECRET"),
