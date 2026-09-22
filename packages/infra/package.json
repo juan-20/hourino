@@ -7,7 +7,8 @@
     "deploy": "alchemy deploy",
     "destroy": "alchemy destroy",
     "dev": "alchemy dev",
-    "profile:edit": "alchemy profile edit"
+    "profile:edit": "alchemy profile edit",
+    "profile:refresh": "alchemy profile refresh"
   },
   "dependencies": {
     "zod": "catalog:"

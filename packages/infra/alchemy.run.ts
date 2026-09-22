@@ -69,7 +69,17 @@ export const observability = Effect.gen(function* () {
 			AXIOM_EDGE_URL: dataset.edgeDeploymentUrl,
 		},
 	};
-});
+}).pipe(
+	// Axiom is optional remote log shipping, not required for the app to run —
+	// evlog's Axiom drain already degrades gracefully with no dataset/apiKey
+	// (see the "[evlog/axiom] Missing dataset or apiKey" warning). A failure
+	// provisioning it (e.g. an Axiom-side account/API issue) must never block
+	// deploying the actual server/web resources.
+	Effect.orElseSucceed(() => ({
+		dataset: undefined,
+		runtimeEnv: {},
+	}))
+);
 
 export const observabilityEnv = observability.pipe(
 	Effect.map(({ runtimeEnv }) => runtimeEnv)
@@ -142,7 +152,7 @@ export default Alchemy.Stack(
 		});
 
 		return {
-			axiomDataset: observabilityResources.dataset.name,
+			axiomDataset: observabilityResources.dataset?.name,
 			server: serverWorker.url,
 			web: webWorker.url,
 		};

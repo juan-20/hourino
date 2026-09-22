@@ -11,7 +11,9 @@ import { relations } from "./relations";
 // (Alchemy-provisioned Neon) is unaffected — this only special-cases the
 // local proxy hostname and otherwise falls back to Neon's default behavior.
 neonConfig.fetchEndpoint = (host) =>
-	host === "db.localtest.me" ? `http://${host}:4444/sql` : `https://${host}/sql`;
+	host === "db.localtest.me"
+		? `http://${host}:4444/sql`
+		: `https://${host}/sql`;
 
 export function createDb(env: DatabaseConfig) {
 	const sql = neon(env.DATABASE_URL);
