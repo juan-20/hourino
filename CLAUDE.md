@@ -15,6 +15,8 @@ All commands run from the repo root via `turbo`, unless noted. Package manager i
 - `bun run dev:local` — start web + server directly (bypassing Alchemy) against the docker-compose Postgres/Redis — the local lane; see Database below
 - `bun run docker:up` / `docker:down` — start/stop the local Postgres + Redis containers (`docker-compose.yml`)
 - `bun run dev:web` — start only the web app
+- `bun run storybook` — run Storybook (Vite builder) for `@hourino/ui`'s component library, on :6006
+- `bun run build-storybook` — build Storybook's static bundle (`packages/ui/storybook-static`, gitignored)
 - `bun run build` — build all apps
 - `bun run check-types` — real TypeScript project-reference build across `db`/`auth`/`api`/`apps/server` (`tsc --build`, incremental) plus plain `tsc --noEmit` for `ui`/`infra`/`web` (which aren't in the reference graph)
 - `bun run check` — Biome/Ultracite lint + format check, plus `depcruise` (dependency-cruiser) enforcing the `domain`→`infrastructure` import boundary
@@ -102,6 +104,20 @@ Aggregate roots: `User` (Better Auth's `user`, `text` id), `Project` (owned by a
 - `Cloudflare.Website.Vite("web", ...)` — deploys `apps/web`, given the server's resolved URL as `VITE_SERVER_URL`
 
 Run infra commands from `packages/infra` (`bunx alchemy dev|deploy|destroy`, or the root `bun run deploy`/`destroy` scripts which delegate via Turbo filter). Deploys are staged; production requires `bunx alchemy deploy --stage production`. After the first deploy, `CORS_ORIGIN` and `BETTER_AUTH_URL` must be set to the real deployed origins in `apps/server/.env` and redeployed.
+
+## Design system
+
+`@hourino/ui`'s tokens implement **"Balanced Riso-Neobrutalism"** — a brand identity built on `#432F2E` (espresso) / `#c3DAE8` (powder blue), a riso-print duotone pair (~8.6:1 contrast). The full rationale, the WCAG contrast matrix, and usage rules live in `packages/ui/DESIGN.md` — read it before touching tokens or adding components. Key facts a session needs without opening that file:
+
+- All color tokens are oklch in `packages/ui/src/styles/globals.css`, contrast-verified in both `:root` and `.dark` — **dark mode flips emphasis** (powder blue carries `--primary` on dark backgrounds, espresso becomes the `--accent` surface tint); it's not a naive inversion of the light-mode values.
+- `--border` (ink brown) and `--ring` (saturated blue) are different hues on purpose, so keyboard focus is never ambiguous against a UI that already shows a visible border on everything — never make them the same color.
+- `--success` is a real token now (there wasn't one before this system) — never use a raw `text-red-500`/`bg-green-500`-style Tailwind color-scale class anywhere in the app; every color decision routes through a semantic token.
+- Shape language: `border-2 border-border` on bounded surfaces, `--radius` tightened to `0.375rem`, and three hard zero-blur shadow utilities (`shadow-brutal-sm`/`shadow-brutal`/`shadow-brutal-lg`, tinted to `--border`) instead of soft blurred shadows. Buttons/badges/switches get a tactile `:active` press (the shadow collapses and the element translates into it) — always paired with `motion-reduce:transition-none` so the state change still happens instantly under `prefers-reduced-motion`, just without the animated transition.
+- `.grain` (a static feTurbulence noise utility in `globals.css`) is for decorative/low-density surfaces only (auth screens, empty states) — **never** on the dashboard or any scrolling table/list.
+- Fonts are self-hosted (`@fontsource-variable/space-grotesk` for UI/headings, `@fontsource/space-mono` for durations/timestamps — monospace digits are tabular for free). There was no working font-loading before this system (`Inter Variable` was referenced in the old tokens but never actually loaded — no `@font-face`/package existed for it).
+- New primitives come from the `shadcn` MCP/CLI (`bunx shadcn add ...`), then get restyled to match the border/shadow language above before merging — never hand-rolled, never a second component library.
+
+`packages/ui` also has Storybook (Vite builder) for the component library (`bun run storybook` / `bun run build-storybook`, see Commands above). Config lives in `packages/ui/.storybook/`; `preview.tsx` wires a light/dark toolbar toggle against the same `.dark` class strategy the app uses, and imports the real `globals.css` tokens so stories render the actual system. `@storybook/addon-a11y` is included by default — use it when reviewing new components.
 
 ## Linting/formatting
 
