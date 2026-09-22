@@ -6,7 +6,7 @@
     "./*": "./src/*.ts"
   },
   "scripts": {
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --build"
   },
   "dependencies": {
     "@hourino/auth": "workspace:*",

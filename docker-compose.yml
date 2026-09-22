@@ -1,0 +1,39 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: hourino-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: hourino
+      POSTGRES_PASSWORD: hourino
+      POSTGRES_DB: hourino_dev
+    ports:
+      # Published as 5433 (not the default 5432): some dev machines already
+      # have a native Postgres process bound to 5432 on the host, which
+      # silently intercepts connections before they reach this container.
+      - "5433:5432"
+    volumes:
+      - hourino_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hourino -d hourino_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: hourino-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - hourino_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  hourino_postgres_data:
+  hourino_redis_data:

@@ -1,6 +1,3 @@
 {
-  "extends": "@hourino/config/tsconfig.base.json",
-  "compilerOptions": {
-    "strictNullChecks": true
-  }
+  "extends": "@hourino/config/tsconfig.base.json"
 }

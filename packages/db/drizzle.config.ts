@@ -2,10 +2,10 @@ import { defineConfig } from "drizzle-kit";
 import "varlock/auto-load";
 
 export default defineConfig({
-  schema: "./src/schema/index.ts",
-  out: "./src/migrations",
-  dialect: "postgresql",
-  dbCredentials: {
-    url: process.env.DATABASE_URL || "",
-  },
+	dbCredentials: {
+		url: process.env.DATABASE_URL || "",
+	},
+	dialect: "postgresql",
+	out: "./src/migrations",
+	schema: "./src/schema/index.ts",
 });

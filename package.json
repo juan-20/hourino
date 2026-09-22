@@ -1,6 +1,7 @@
 {
   "name": "hourino",
   "private": true,
+  "type": "module",
   "workspaces": {
     "packages": [
       "apps/*",
@@ -26,23 +27,26 @@
       "drizzle-orm": "1.0.0-rc.4"
     }
   },
-  "type": "module",
   "scripts": {
-    "dev": "turbo run dev",
+    "auth:generate": "cd apps/server && bun run auth:generate",
     "build": "turbo run build",
+    "check": "ultracite check && depcruise --config .dependency-cruiser.cjs apps packages",
+    "check:boundaries": "depcruise --config .dependency-cruiser.cjs apps packages",
     "check-types": "turbo run check-types",
-    "dev:web": "turbo run dev:bare -F web --",
-    "db:push": "turbo run db:push -F @hourino/db --",
-    "db:studio": "turbo run db:studio -F @hourino/db --",
     "db:generate": "turbo run db:generate -F @hourino/db --",
     "db:migrate": "turbo run db:migrate -F @hourino/db --",
+    "db:push": "turbo run db:push -F @hourino/db --",
+    "db:studio": "turbo run db:studio -F @hourino/db --",
     "deploy": "turbo run deploy -F @hourino/infra --",
     "destroy": "turbo run destroy -F @hourino/infra --",
+    "dev": "turbo run dev",
+    "dev:local": "turbo run dev:bare -F server -F web --",
+    "dev:web": "turbo run dev:bare -F web --",
+    "docker:down": "docker compose down",
+    "docker:up": "docker compose up -d",
     "env:generate": "varlock codegen --path ./apps/web/ && varlock codegen --path ./apps/server/ && varlock codegen --path ./packages/db/",
-    "postinstall": "varlock codegen --path ./apps/web/ && varlock codegen --path ./apps/server/ && varlock codegen --path ./packages/db/",
-    "auth:generate": "cd apps/server && bun run auth:generate",
-    "check": "ultracite check",
-    "fix": "ultracite fix"
+    "fix": "ultracite fix",
+    "postinstall": "varlock codegen --path ./apps/web/ && varlock codegen --path ./apps/server/ && varlock codegen --path ./packages/db/"
   },
   "dependencies": {
     "zod": "catalog:"
@@ -52,6 +56,7 @@
     "@cloudflare/workers-types": "^5.20260906.1",
     "@hourino/config": "workspace:*",
     "@types/bun": "catalog:",
+    "dependency-cruiser": "^18.4.0",
     "turbo": "^2.10.12",
     "typescript": "catalog:",
     "ultracite": "7.11.0",

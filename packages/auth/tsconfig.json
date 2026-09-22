@@ -1,7 +1,10 @@
 {
   "extends": "@hourino/config/tsconfig.base.json",
   "compilerOptions": {
-    "noEmit": true,
-    "strictNullChecks": true
-  }
+    "composite": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "./dist-types"
+  },
+  "references": [{ "path": "../db" }]
 }

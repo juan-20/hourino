@@ -1,8 +1,6 @@
 {
   "id": "fbd38875-023f-4e66-96f0-abde6dcf04ce",
-  "prevIds": [
-    "91764693-d09b-42e7-b122-a3203ba6551a"
-  ],
+  "prevIds": ["91764693-d09b-42e7-b122-a3203ba6551a"],
   "version": "8",
   "dialect": "postgres",
   "ddl": [
@@ -1037,14 +1035,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "user_id"
-      ],
+      "columns": ["user_id"],
       "schemaTo": "public",
       "tableTo": "user",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "NO ACTION",
       "onDelete": "CASCADE",
       "name": "account_user_id_user_id_fkey",
@@ -1054,14 +1048,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "user_id"
-      ],
+      "columns": ["user_id"],
       "schemaTo": "public",
       "tableTo": "user",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "NO ACTION",
       "onDelete": "CASCADE",
       "name": "session_user_id_user_id_fkey",
@@ -1071,14 +1061,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "user_id"
-      ],
+      "columns": ["user_id"],
       "schemaTo": "public",
       "tableTo": "user",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "NO ACTION",
       "onDelete": "CASCADE",
       "name": "monthly_summaries_user_id_user_id_fkey",
@@ -1088,14 +1074,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "project_id"
-      ],
+      "columns": ["project_id"],
       "schemaTo": "public",
       "tableTo": "projects",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "NO ACTION",
       "onDelete": "CASCADE",
       "name": "monthly_summaries_project_id_projects_id_fkey",
@@ -1105,14 +1087,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "owner_id"
-      ],
+      "columns": ["owner_id"],
       "schemaTo": "public",
       "tableTo": "user",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "NO ACTION",
       "onDelete": "CASCADE",
       "name": "projects_owner_id_user_id_fkey",
@@ -1122,14 +1100,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "user_id"
-      ],
+      "columns": ["user_id"],
       "schemaTo": "public",
       "tableTo": "user",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "NO ACTION",
       "onDelete": "CASCADE",
       "name": "report_runs_user_id_user_id_fkey",
@@ -1139,14 +1113,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "user_id"
-      ],
+      "columns": ["user_id"],
       "schemaTo": "public",
       "tableTo": "user",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "NO ACTION",
       "onDelete": "CASCADE",
       "name": "time_entries_user_id_user_id_fkey",
@@ -1156,14 +1126,10 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "project_id"
-      ],
+      "columns": ["project_id"],
       "schemaTo": "public",
       "tableTo": "projects",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "NO ACTION",
       "onDelete": "RESTRICT",
       "name": "time_entries_project_id_projects_id_fkey",
@@ -1172,9 +1138,7 @@
       "table": "time_entries"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "account_pkey",
       "schema": "public",
@@ -1182,9 +1146,7 @@
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "session_pkey",
       "schema": "public",
@@ -1192,9 +1154,7 @@
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "user_pkey",
       "schema": "public",
@@ -1202,9 +1162,7 @@
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "verification_pkey",
       "schema": "public",
@@ -1212,9 +1170,7 @@
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "monthly_summaries_pkey",
       "schema": "public",
@@ -1222,9 +1178,7 @@
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "projects_pkey",
       "schema": "public",
@@ -1232,9 +1186,7 @@
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "report_runs_pkey",
       "schema": "public",
@@ -1243,9 +1195,7 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "token"
-      ],
+      "columns": ["token"],
       "nullsNotDistinct": false,
       "name": "session_token_key",
       "schema": "public",
@@ -1254,9 +1204,7 @@
     },
     {
       "nameExplicit": false,
-      "columns": [
-        "email"
-      ],
+      "columns": ["email"],
       "nullsNotDistinct": false,
       "name": "user_email_key",
       "schema": "public",

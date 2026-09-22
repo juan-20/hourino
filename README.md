@@ -25,13 +25,13 @@ First, install the dependencies:
 bun install
 ```
 
-## Database Setup
+## Running the project
 
-Alchemy provisions Neon, passes its connection credentials directly to the deployed application, and manages database deployment in the same stack as the consuming app. You do not need to copy a hosted `DATABASE_URL` into the app environment.
+There are two ways to run `hourino` locally.
 
-Generate and commit migration SQL with `bun run db:generate`. Deployment applies checked-in migrations after provisioning the database.
+### Option A — Cloud lane (Alchemy + Neon)
 
-Then, run the development server:
+Alchemy provisions a real Neon database, passes its connection credentials directly to the running app, and manages database deployment in the same stack as the consuming app. You do not need to copy a hosted `DATABASE_URL` into the app environment.
 
 ```bash
 bun run dev
@@ -39,6 +39,25 @@ bun run dev
 
 Open [http://localhost:3001](http://localhost:3001) in your browser to see the web application.
 The API is running at [http://localhost:3000](http://localhost:3000).
+
+### Option B — Local lane (docker-compose Postgres + Redis)
+
+For fully offline iteration, or to try the Redis-backed background-worker path once it lands, run everything against local containers instead:
+
+```bash
+bun run docker:up                                      # start Postgres + Redis
+cp apps/server/.env.local.example apps/server/.env.local  # then fill in BETTER_AUTH_SECRET / POLAR_ACCESS_TOKEN
+cp apps/web/.env.local.example apps/web/.env.local
+cp packages/db/.env.local.example packages/db/.env.local
+bun run db:migrate                                      # apply checked-in migrations to the local Postgres
+bun run dev:local                                        # starts web + server directly, no Alchemy
+```
+
+`.env.local` files are gitignored — only the `.env.local.example` templates are committed. Stop the containers with `bun run docker:down`.
+
+## Database Setup
+
+Generate and commit migration SQL with `bun run db:generate`. Deployment applies checked-in migrations after provisioning the database. `db:push` (schema push without a migration file) is for local iteration against the docker-compose Postgres only — it refuses to run against a non-localhost `DATABASE_URL` or `NODE_ENV=production`.
 
 ## UI Customization
 
@@ -123,15 +142,18 @@ hourino/
 
 ## Available Scripts
 
-- `bun run dev`: Start all applications in development mode
+- `bun run dev`: Start all applications in development mode (cloud lane, Alchemy + Neon)
+- `bun run dev:local`: Start web + server directly against docker-compose Postgres/Redis (local lane)
+- `bun run docker:up` / `docker:down`: Start/stop the local Postgres + Redis containers
 - `bun run build`: Build all applications
 - `bun run dev:web`: Start only the web application
-- `bun run check-types`: Check TypeScript types across all apps
-- `bun run db:push`: Push schema changes to database
+- `bun run check-types`: TypeScript project-reference build (`db`/`auth`/`api`/`apps/server`) plus type checks for `ui`/`infra`/`web`
+- `bun run db:push`: Push schema changes to database (local Postgres only — guarded against non-local/production targets)
 - `bun run db:generate`: Generate database client/types
 - `bun run db:migrate`: Run database migrations
 - `bun run db:studio`: Open database studio UI
-- `bun run check`: Run Biome formatting and linting
+- `bun run check`: Run Biome formatting/linting plus the dependency-cruiser architectural-boundary check
+- `bun run check:boundaries`: Run just the dependency-cruiser architectural-boundary check
 
 ## Better Auth Schema Generation
 

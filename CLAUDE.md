@@ -11,13 +11,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 All commands run from the repo root via `turbo`, unless noted. Package manager is Bun (`bun@1.4.2`) — use `bun`, not `npm`/`pnpm`/`yarn`.
 
 - `bun install` — install deps (also runs `postinstall`, which generates `src/env.ts` for each app/package from its `.env.schema` via Varlock)
-- `bun run dev` — start all apps (web on :3001, server on :3000)
+- `bun run dev` — start all apps against Alchemy-provisioned Neon (web on :3001, server on :3000) — the cloud lane
+- `bun run dev:local` — start web + server directly (bypassing Alchemy) against the docker-compose Postgres/Redis — the local lane; see Database below
+- `bun run docker:up` / `docker:down` — start/stop the local Postgres + Redis containers (`docker-compose.yml`)
 - `bun run dev:web` — start only the web app
 - `bun run build` — build all apps
-- `bun run check-types` — TypeScript project-reference check across the whole workspace (`tsc --noEmit` per package)
-- `bun run check` — Biome/Ultracite lint + format check (`ultracite check`)
+- `bun run check-types` — real TypeScript project-reference build across `db`/`auth`/`api`/`apps/server` (`tsc --build`, incremental) plus plain `tsc --noEmit` for `ui`/`infra`/`web` (which aren't in the reference graph)
+- `bun run check` — Biome/Ultracite lint + format check, plus `depcruise` (dependency-cruiser) enforcing the `domain`→`infrastructure` import boundary
+- `bun run check:boundaries` — just the `depcruise` architectural-boundary check on its own
 - `bun run fix` — auto-fix lint/format issues (`ultracite fix`)
-- `bun run db:push` / `db:generate` / `db:migrate` / `db:studio` — Drizzle Kit commands scoped to `@hourino/db` (see below)
+- `bun run db:push` / `db:generate` / `db:migrate` / `db:studio` — Drizzle Kit commands scoped to `@hourino/db` (see below). `db:push` refuses to run against a non-localhost `DATABASE_URL` or `NODE_ENV=production` (`packages/db/scripts/guard-db-push.mjs`) — override with `DB_PUSH_FORCE=1` only if genuinely intentional.
 - `bun run auth:generate` — regenerate `packages/db/src/schema/auth.ts` from the Better Auth config in `apps/server/src/services.ts` (run after changing auth plugins/options)
 - `bun run env:generate` — regenerate each app/package's `src/env.ts` from its `.env.schema` (run after editing a schema)
 
@@ -31,6 +34,7 @@ There is no test suite/framework configured in this repo yet.
 - Migrations are written to `packages/db/src/migrations` and are checked in; `bun run db:generate` creates new migration SQL from schema changes, `bun run db:migrate` applies them, `bun run db:push` pushes schema directly (dev only). The installed `drizzle-kit` (1.0.0-rc.4, pinned via bun catalog) uses **folder-based migrations** — each migration is `src/migrations/<timestamp>_<slug>/{migration.sql,snapshot.json}`, chained via `prevIds` inside `snapshot.json`, not the older flat `0000_name.sql` + `meta/_journal.json` layout. Use `drizzle-kit generate --custom --name=<name>` for hand-written SQL migrations (partitioning DDL, PL/pgSQL functions) that `drizzle-kit` can't diff from the schema DSL.
 - `db:generate`/`db:migrate` validate `DATABASE_URL` even though `generate` never opens a connection — when running them outside an active `bunx alchemy dev` session (which injects the real value), pass a placeholder inline, e.g. `DATABASE_URL="postgres://placeholder:placeholder@localhost:5432/placeholder" bun run db:generate`.
 - Local dev does **not** need a copied `DATABASE_URL`: Alchemy provisions the Neon database and injects credentials into the running app as part of the same deploy/dev stack (see `packages/infra/alchemy.run.ts`).
+- **Two dev lanes exist.** Cloud lane (`bun run dev`): Alchemy provisions real Neon + orchestrates web/server, as above — no local setup needed. Local lane (`bun run dev:local`): `bun run docker:up` starts `docker-compose.yml`'s Postgres+Redis (Redis is provisioned for the future Phase 4 background-worker item; nothing consumes it yet), then copy each `apps/server/.env.local.example` / `apps/web/.env.local.example` / `packages/db/.env.local.example` to `.env.local` (gitignored, filling in `BETTER_AUTH_SECRET`/`POLAR_ACCESS_TOKEN` placeholders), run `bun run db:migrate` to apply the checked-in migrations to the local Postgres, then `bun run dev:local`. Varlock's `varlock/auto-load` (already wired into `apps/server/src/env.server.ts` and `packages/db/drizzle.config.ts`) picks up `.env.local` automatically when running outside Alchemy.
 - `time_entries` is **physically RANGE-partitioned by `work_date`** (monthly partitions) — `drizzle-kit` has no DSL for `PARTITION BY` and cannot diff a partitioned table, so its schema file (`schema/time-entries.ts`) declares columns only, for typed query-builder/relations support (`db.query.timeEntries.*`). All indexes, the composite `(id, work_date)` primary key, and the `CHECK` constraint are hand-written SQL migrations. Never add `.primaryKey()`/`index()` to that schema file, and never run `bun run db:push` against it — push does live introspection and will try to "fix" the partitioning it doesn't understand. Column changes need a hand-written `ALTER` migration mirrored into the schema file.
 - Two SQL functions support the partitioned model: `maintain_time_entries_partitions(months_ahead)` (idempotent monthly partition creation) and `refresh_monthly_summaries(target_month)` (rebuilds the `monthly_summaries` read-model table via `GROUPING SETS`, soft-delete-aware). Neither is scheduled yet — no cron/queue infra exists in this repo; invoke manually until the "Phase 4: CRONs & Background Workers" work (BullMQ/Redis or pg-boss, `apps/worker`) lands and calls them from its monthly fan-out job.
 
@@ -57,6 +61,10 @@ packages/
   infra/    @hourino/infra — Alchemy stack (alchemy.run.ts): provisions Neon DB, Axiom logging, deploys server to Prisma and web to Cloudflare
   config/   @hourino/config — shared base tsconfig only
 ```
+
+### TypeScript project references
+
+`db` → `auth` → `api` → `apps/server` form a real TS composite-project graph (`composite: true`, `references` in each `tsconfig.json`): `db` is a leaf, `auth`/`api` reference `db` (and `api` also references `auth`, for the `Session` type), `apps/server` references all three. Since these packages ship raw TS via `exports` (no build step — see below), `composite` projects emit **declarations only** (`declaration: true`, `emitDeclarationOnly: true`) into a gitignored `dist-types/`, purely to satisfy TS's requirement that referenced projects be built — `exports` still points at `src/*.ts` and nothing downstream consumes `dist-types`. This only works via `tsc --build` (plain `tsc --noEmit -p <project>` does **not** auto-build referenced projects and will fail with `TS6305`) — hence `check-types` uses `--build` for these four packages. `apps/web` and `packages/ui` are intentionally outside this graph (web doesn't even extend `@hourino/config`'s base tsconfig and owns its own Vite resolution; ui has no internal package deps to model).
 
 ### Dependency injection pattern
 
@@ -98,3 +106,5 @@ Run infra commands from `packages/infra` (`bunx alchemy dev|deploy|destroy`, or 
 ## Linting/formatting
 
 Biome (via the `ultracite` preset — `ultracite/biome/core`, `/react`, `/tanstack`) is configured in the root `biome.json`: tabs, double quotes, organize-imports-on-save, plus a stricter `style` rule set (no parameter reassignment, enforced `as const`, self-closing elements, etc.). Use `bun run check` / `bun run fix` rather than invoking Biome directly, and don't hand-edit generated files (`routeTree.gen.ts`, `packages/db/src/schema/auth.ts`, `src/env*.ts`).
+
+`bun run check` also runs `depcruise` against `.dependency-cruiser.cjs` (Biome has no path-based architectural-boundary rule, so this runs alongside it, not instead of it). It forbids any `domain/`/`application/` path importing an `infrastructure/` path, anywhere in `apps/**`/`packages/**` — matches zero files today (no such folders exist yet; that's Phase 2's job), so it can only start failing once that layering is introduced. Run `bun run check:boundaries` to check just that rule.
