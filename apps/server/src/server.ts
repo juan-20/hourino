@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import { dirname, join } from "node:path";
 import fastifyCors from "@fastify/cors";
 import fastifyRateLimit from "@fastify/rate-limit";
 import fastifySwagger from "@fastify/swagger";
@@ -99,6 +101,23 @@ function matchSensitiveAuthRoute(url: string): SensitiveAuthRoute | null {
 initLogger({
 	env: { service: "hourino-server" },
 });
+
+/** Same "no `node_modules` alongside a single-file `bun build` bundle" signal
+ * `env.server.ts` uses for its varlock-binary check — walks up from `startDir`
+ * looking for any `node_modules` directory. */
+function isBundledDeploy(startDir: string): boolean {
+	let currentDir = startDir;
+	for (;;) {
+		if (existsSync(join(currentDir, "node_modules"))) {
+			return false;
+		}
+		const parentDir = dirname(currentDir);
+		if (parentDir === currentDir) {
+			return true;
+		}
+		currentDir = parentDir;
+	}
+}
 
 export interface ServerDeps {
 	auth?: Auth;
@@ -247,7 +266,21 @@ export function buildServer(deps: ServerDeps = {}): FastifyInstance {
 		mode: "static",
 		specification: { document: buildOpenApiDocument() as never },
 	});
-	fastify.register(fastifySwaggerUi, { routePrefix: "/docs" });
+	// @fastify/swagger-ui serves its logo and swagger-ui-dist JS/CSS by reading
+	// files from its own package directory via `__dirname`-relative paths. On
+	// the single-file `bun build` bundle Prisma Compute deploys (no
+	// `node_modules` alongside it), those paths don't resolve to real files —
+	// the plugin throws on register (ENOENT for the logo; "root must be an
+	// absolute path" for its static-asset server), crash-looping the whole
+	// process before it can bind a port. It only works where `node_modules`
+	// is actually present, i.e. everywhere except that bundled deploy.
+	if (isBundledDeploy(process.cwd())) {
+		fastify.log.warn(
+			"Skipping @fastify/swagger-ui: running from a bundled deploy with no node_modules, and the plugin reads its assets from disk."
+		);
+	} else {
+		fastify.register(fastifySwaggerUi, { routePrefix: "/docs" });
+	}
 
 	fastify.get("/", () => "OK");
 
