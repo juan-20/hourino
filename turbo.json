@@ -25,6 +25,15 @@
       "cache": false,
       "persistent": true
     },
+    "storybook": {
+      "cache": false,
+      "persistent": true
+    },
+    "build-storybook": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["storybook-static/**"]
+    },
     "db:push": {
       "cache": false,
       "interactive": true

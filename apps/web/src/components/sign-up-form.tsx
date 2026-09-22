@@ -57,7 +57,7 @@ export default function SignUpForm() {
 	}
 
 	return (
-		<div className="mx-auto mt-10 w-full max-w-md p-6">
+		<div className="grain mx-auto mt-10 w-full max-w-md p-6">
 			<h1 className="mb-6 text-center font-bold text-3xl">Create Account</h1>
 
 			<form
@@ -81,7 +81,7 @@ export default function SignUpForm() {
 									value={field.state.value}
 								/>
 								{field.state.meta.errors.map((error) => (
-									<p className="text-red-500" key={error?.message}>
+									<p className="text-destructive" key={error?.message}>
 										{error?.message}
 									</p>
 								))}
@@ -104,7 +104,7 @@ export default function SignUpForm() {
 									value={field.state.value}
 								/>
 								{field.state.meta.errors.map((error) => (
-									<p className="text-red-500" key={error?.message}>
+									<p className="text-destructive" key={error?.message}>
 										{error?.message}
 									</p>
 								))}
@@ -127,7 +127,7 @@ export default function SignUpForm() {
 									value={field.state.value}
 								/>
 								{field.state.meta.errors.map((error) => (
-									<p className="text-red-500" key={error?.message}>
+									<p className="text-destructive" key={error?.message}>
 										{error?.message}
 									</p>
 								))}
@@ -160,7 +160,7 @@ export default function SignUpForm() {
 
 			<div className="mt-4 text-center">
 				<Link
-					className="text-indigo-600 underline-offset-4 hover:text-indigo-800 hover:underline"
+					className="text-primary underline-offset-4 hover:text-primary/80 hover:underline"
 					to="/login"
 				>
 					Already have an account? Sign in

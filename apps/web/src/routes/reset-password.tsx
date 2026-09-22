@@ -47,7 +47,7 @@ function RouteComponent() {
 	});
 
 	return (
-		<div className="mx-auto mt-10 w-full max-w-md p-6">
+		<div className="grain mx-auto mt-10 w-full max-w-md p-6">
 			<h1 className="mb-6 text-center font-bold text-3xl">Reset Password</h1>
 
 			<form
@@ -72,7 +72,7 @@ function RouteComponent() {
 									value={field.state.value}
 								/>
 								{field.state.meta.errors.map((error) => (
-									<p className="text-red-500" key={error?.message}>
+									<p className="text-destructive" key={error?.message}>
 										{error?.message}
 									</p>
 								))}

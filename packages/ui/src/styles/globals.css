@@ -1,82 +1,108 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "@fontsource-variable/space-grotesk";
+@import "@fontsource/space-mono";
 @source "../../../apps/**/*.{ts,tsx}";
 @source "../**/*.{ts,tsx}";
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * Hourino design system: "Balanced Riso-Neobrutalism".
+ * Palette derived from brand colors #432F2E (espresso) and #c3DAE8 (powder blue) -
+ * every token below was picked/verified against WCAG contrast math, not eyeballed.
+ * See packages/ui/DESIGN.md for the full rationale and usage rules.
+ */
 :root {
-	--background: oklch(1 0 0);
-	--foreground: oklch(0.145 0 0);
-	--card: oklch(1 0 0);
-	--card-foreground: oklch(0.145 0 0);
-	--popover: oklch(1 0 0);
-	--popover-foreground: oklch(0.145 0 0);
-	--primary: oklch(0.205 0 0);
-	--primary-foreground: oklch(0.985 0 0);
-	--secondary: oklch(0.97 0 0);
-	--secondary-foreground: oklch(0.205 0 0);
-	--muted: oklch(0.97 0 0);
-	--muted-foreground: oklch(0.556 0 0);
-	--accent: oklch(0.97 0 0);
-	--accent-foreground: oklch(0.205 0 0);
-	--destructive: oklch(0.58 0.22 27);
-	--border: oklch(0.922 0 0);
-	--input: oklch(0.922 0 0);
-	--ring: oklch(0.708 0 0);
-	--chart-1: oklch(0.809 0.105 251.813);
-	--chart-2: oklch(0.623 0.214 259.815);
-	--chart-3: oklch(0.546 0.245 262.881);
-	--chart-4: oklch(0.488 0.243 264.376);
-	--chart-5: oklch(0.424 0.199 265.638);
-	--radius: 0.625rem;
-	--sidebar: oklch(0.985 0 0);
-	--sidebar-foreground: oklch(0.145 0 0);
-	--sidebar-primary: oklch(0.205 0 0);
-	--sidebar-primary-foreground: oklch(0.985 0 0);
-	--sidebar-accent: oklch(0.97 0 0);
-	--sidebar-accent-foreground: oklch(0.205 0 0);
-	--sidebar-border: oklch(0.922 0 0);
-	--sidebar-ring: oklch(0.708 0 0);
+	--background: oklch(
+		0.975 0.006 60
+	); /* warm "paper" off-white, never pure white */
+	--foreground: oklch(0.22 0.02 30);
+	--card: oklch(0.985 0.004 60);
+	--card-foreground: oklch(0.22 0.02 30);
+	--popover: oklch(0.985 0.004 60);
+	--popover-foreground: oklch(0.22 0.02 30);
+	--primary: oklch(0.3281 0.0296 22.05); /* espresso #432F2E */
+	--primary-foreground: oklch(0.97 0.01 70);
+	--secondary: oklch(0.9 0.012 40);
+	--secondary-foreground: oklch(0.22 0.02 30);
+	--muted: oklch(0.93 0.008 60);
+	--muted-foreground: oklch(0.46 0.02 40);
+	--accent: oklch(0.8756 0.0313 234.48); /* powder blue #c3DAE8 */
+	--accent-foreground: oklch(0.3281 0.0296 22.05);
+	--destructive: oklch(0.56 0.22 27);
+	--destructive-foreground: oklch(0.97 0.01 70);
+	--success: oklch(0.52 0.13 148);
+	--success-foreground: oklch(0.975 0.006 60);
+	--border: oklch(0.5 0.045 30); /* ink-brown border, ~5.7:1 vs background */
+	--input: oklch(0.5 0.045 30);
+	--ring: oklch(
+		0.62 0.11 235
+	); /* saturated focus-blue, deliberately distinct from the ink border */
+	--chart-1: oklch(0.3281 0.0296 22.05);
+	--chart-2: oklch(0.62 0.11 235);
+	--chart-3: oklch(0.54 0.13 75);
+	--chart-4: oklch(0.52 0.13 148);
+	--chart-5: oklch(0.45 0.09 320);
+	--radius: 0.375rem;
+	--sidebar: oklch(0.985 0.004 60);
+	--sidebar-foreground: oklch(0.22 0.02 30);
+	--sidebar-primary: oklch(0.3281 0.0296 22.05);
+	--sidebar-primary-foreground: oklch(0.97 0.01 70);
+	--sidebar-accent: oklch(0.8756 0.0313 234.48);
+	--sidebar-accent-foreground: oklch(0.3281 0.0296 22.05);
+	--sidebar-border: oklch(0.5 0.045 30);
+	--sidebar-ring: oklch(0.62 0.11 235);
 }
 
 .dark {
-	--background: oklch(0.145 0 0);
-	--foreground: oklch(0.985 0 0);
-	--card: oklch(0.205 0 0);
-	--card-foreground: oklch(0.985 0 0);
-	--popover: oklch(0.205 0 0);
-	--popover-foreground: oklch(0.985 0 0);
-	--primary: oklch(0.87 0 0);
-	--primary-foreground: oklch(0.205 0 0);
-	--secondary: oklch(0.269 0 0);
-	--secondary-foreground: oklch(0.985 0 0);
-	--muted: oklch(0.269 0 0);
-	--muted-foreground: oklch(0.708 0 0);
-	--accent: oklch(0.371 0 0);
-	--accent-foreground: oklch(0.985 0 0);
+	--background: oklch(0.19 0.014 40); /* dark "paper", not pure black */
+	--foreground: oklch(0.93 0.012 70);
+	--card: oklch(0.23 0.014 40);
+	--card-foreground: oklch(0.93 0.012 70);
+	--popover: oklch(0.23 0.014 40);
+	--popover-foreground: oklch(0.93 0.012 70);
+	--primary: oklch(
+		0.8756 0.0313 234.48
+	); /* powder blue carries primary on dark */
+	--primary-foreground: oklch(0.22 0.03 30);
+	--secondary: oklch(0.28 0.014 40);
+	--secondary-foreground: oklch(0.93 0.012 70);
+	--muted: oklch(0.28 0.014 40);
+	--muted-foreground: oklch(0.68 0.02 60);
+	--accent: oklch(0.3 0.03 30); /* espresso surface tint */
+	--accent-foreground: oklch(0.9 0.02 234);
 	--destructive: oklch(0.704 0.191 22.216);
-	--border: oklch(1 0 0 / 10%);
-	--input: oklch(1 0 0 / 15%);
-	--ring: oklch(0.556 0 0);
-	--chart-1: oklch(0.809 0.105 251.813);
-	--chart-2: oklch(0.623 0.214 259.815);
-	--chart-3: oklch(0.546 0.245 262.881);
-	--chart-4: oklch(0.488 0.243 264.376);
-	--chart-5: oklch(0.424 0.199 265.638);
-	--sidebar: oklch(0.205 0 0);
-	--sidebar-foreground: oklch(0.985 0 0);
-	--sidebar-primary: oklch(0.488 0.243 264.376);
-	--sidebar-primary-foreground: oklch(0.985 0 0);
-	--sidebar-accent: oklch(0.269 0 0);
-	--sidebar-accent-foreground: oklch(0.985 0 0);
-	--sidebar-border: oklch(1 0 0 / 10%);
-	--sidebar-ring: oklch(0.556 0 0);
+	--destructive-foreground: oklch(0.19 0.014 40);
+	--success: oklch(0.72 0.13 148);
+	--success-foreground: oklch(0.19 0.014 40);
+	--border: oklch(0.52 0.03 40); /* lightened for 3.3:1 vs dark background */
+	--input: oklch(0.52 0.03 40);
+	--ring: oklch(0.78 0.09 235);
+	--chart-1: oklch(0.8756 0.0313 234.48);
+	--chart-2: oklch(0.68 0.14 40);
+	--chart-3: oklch(0.75 0.13 75);
+	--chart-4: oklch(0.72 0.13 148);
+	--chart-5: oklch(0.68 0.11 320);
+	--sidebar: oklch(0.23 0.014 40);
+	--sidebar-foreground: oklch(0.93 0.012 70);
+	--sidebar-primary: oklch(0.8756 0.0313 234.48);
+	--sidebar-primary-foreground: oklch(0.22 0.03 30);
+	--sidebar-accent: oklch(0.3 0.03 30);
+	--sidebar-accent-foreground: oklch(0.9 0.02 234);
+	--sidebar-border: oklch(0.52 0.03 40);
+	--sidebar-ring: oklch(0.78 0.09 235);
 }
 
 @theme inline {
-	--font-sans: "Inter Variable", sans-serif;
+	--font-sans: "Space Grotesk Variable", sans-serif;
+	--font-mono: "Space Mono", monospace;
+	--color-success: var(--success);
+	--color-success-foreground: var(--success-foreground);
+	--shadow-brutal-sm: 2px 2px 0 0 var(--border);
+	--shadow-brutal: 4px 4px 0 0 var(--border);
+	--shadow-brutal-lg: 6px 6px 0 0 var(--border);
 	--color-sidebar-ring: var(--sidebar-ring);
 	--color-sidebar-border: var(--sidebar-border);
 	--color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -94,6 +120,7 @@
 	--color-input: var(--input);
 	--color-border: var(--border);
 	--color-destructive: var(--destructive);
+	--color-destructive-foreground: var(--destructive-foreground);
 	--color-accent-foreground: var(--accent-foreground);
 	--color-accent: var(--accent);
 	--color-muted-foreground: var(--muted-foreground);
@@ -126,5 +153,37 @@
 	}
 	html {
 		@apply font-sans;
+	}
+}
+
+/*
+ * Riso grain texture - a static feTurbulence noise layer, cheap to paint since it's a
+ * plain background-image on an absolutely-positioned pseudo-element (no scroll-driven
+ * repaints). Apply `.grain` only to decorative/low-density containers (auth screens,
+ * empty states, hero/marketing sections) - never to a scrolling table, list, or the
+ * dashboard shell. See packages/ui/DESIGN.md for the full usage rule.
+ */
+.grain {
+	position: relative;
+	isolation: isolate;
+}
+.grain::before {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	pointer-events: none;
+	content: "";
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+	background-repeat: repeat;
+	mix-blend-mode: multiply;
+	opacity: 0.06;
+}
+.dark .grain::before {
+	mix-blend-mode: overlay;
+	opacity: 0.08;
+}
+@media (prefers-contrast: more) {
+	.grain::before {
+		display: none;
 	}
 }
