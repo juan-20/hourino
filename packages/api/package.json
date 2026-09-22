@@ -6,17 +6,20 @@
     "./*": "./src/*.ts"
   },
   "scripts": {
-    "check-types": "tsc --build"
+    "check-types": "tsc --build",
+    "test": "vitest run"
   },
   "dependencies": {
     "@hourino/auth": "workspace:*",
     "@hourino/db": "workspace:*",
     "@trpc/client": "catalog:",
     "@trpc/server": "catalog:",
+    "trpc-to-openapi": "^3.3.0",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@hourino/config": "workspace:*",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

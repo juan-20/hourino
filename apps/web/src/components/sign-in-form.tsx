@@ -2,19 +2,16 @@ import { Button } from "@hourino/ui/components/button";
 import { Input } from "@hourino/ui/components/input";
 import { Label } from "@hourino/ui/components/label";
 import { useForm } from "@tanstack/react-form";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import z from "zod";
 
 import { authClient } from "@/lib/auth-client";
 
+import { GoogleSignInButton } from "./google-sign-in-button";
 import Loader from "./loader";
 
-export default function SignInForm({
-	onSwitchToSignUp,
-}: {
-	onSwitchToSignUp: () => void;
-}) {
+export default function SignInForm() {
 	const navigate = useNavigate({
 		from: "/",
 	});
@@ -132,14 +129,27 @@ export default function SignInForm({
 				</form.Subscribe>
 			</form>
 
-			<div className="mt-4 text-center">
-				<Button
-					className="text-indigo-600 hover:text-indigo-800"
-					onClick={onSwitchToSignUp}
-					variant="link"
-				>
-					Need an account? Sign Up
-				</Button>
+			<div className="mt-4">
+				<GoogleSignInButton />
+			</div>
+
+			<div className="mt-4 space-y-2 text-center">
+				<p>
+					<Link
+						className="text-indigo-600 underline-offset-4 hover:text-indigo-800 hover:underline"
+						to="/forgot-password"
+					>
+						Forgot your password?
+					</Link>
+				</p>
+				<p>
+					<Link
+						className="text-indigo-600 underline-offset-4 hover:text-indigo-800 hover:underline"
+						to="/signup"
+					>
+						Need an account? Sign up
+					</Link>
+				</p>
 			</div>
 		</div>
 	);

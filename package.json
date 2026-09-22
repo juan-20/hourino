@@ -24,7 +24,8 @@
       "@types/react": "^19.2.18",
       "@types/react-dom": "^19.2.7",
       "tailwindcss": "^4.3.3",
-      "drizzle-orm": "1.0.0-rc.4"
+      "drizzle-orm": "1.0.0-rc.4",
+      "vitest": "^5.0.1"
     }
   },
   "scripts": {
@@ -46,7 +47,8 @@
     "docker:up": "docker compose up -d",
     "env:generate": "varlock codegen --path ./apps/web/ && varlock codegen --path ./apps/server/ && varlock codegen --path ./packages/db/",
     "fix": "ultracite fix",
-    "postinstall": "varlock codegen --path ./apps/web/ && varlock codegen --path ./apps/server/ && varlock codegen --path ./packages/db/"
+    "postinstall": "varlock codegen --path ./apps/web/ && varlock codegen --path ./apps/server/ && varlock codegen --path ./packages/db/",
+    "test": "turbo run test"
   },
   "dependencies": {
     "zod": "catalog:"

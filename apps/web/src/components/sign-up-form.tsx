@@ -2,19 +2,16 @@ import { Button } from "@hourino/ui/components/button";
 import { Input } from "@hourino/ui/components/input";
 import { Label } from "@hourino/ui/components/label";
 import { useForm } from "@tanstack/react-form";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import z from "zod";
 
 import { authClient } from "@/lib/auth-client";
 
+import { GoogleSignInButton } from "./google-sign-in-button";
 import Loader from "./loader";
 
-export default function SignUpForm({
-	onSwitchToSignIn,
-}: {
-	onSwitchToSignIn: () => void;
-}) {
+export default function SignUpForm() {
 	const navigate = useNavigate({
 		from: "/",
 	});
@@ -157,14 +154,17 @@ export default function SignUpForm({
 				</form.Subscribe>
 			</form>
 
+			<div className="mt-4">
+				<GoogleSignInButton />
+			</div>
+
 			<div className="mt-4 text-center">
-				<Button
-					className="text-indigo-600 hover:text-indigo-800"
-					onClick={onSwitchToSignIn}
-					variant="link"
+				<Link
+					className="text-indigo-600 underline-offset-4 hover:text-indigo-800 hover:underline"
+					to="/login"
 				>
-					Already have an account? Sign In
-				</Button>
+					Already have an account? Sign in
+				</Link>
 			</div>
 		</div>
 	);

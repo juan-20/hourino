@@ -9,10 +9,14 @@
     "compile": "bun build --compile --no-compile-autoload-dotenv --minify --sourcemap --bytecode ./src/index.ts --outfile server",
     "dev:bare": "bun run --hot src/index.ts",
     "env:generate": "varlock codegen",
-    "start": "bun run dist/index.mjs"
+    "start": "bun run dist/index.mjs",
+    "test": "vitest run"
   },
   "dependencies": {
     "@fastify/cors": "^11.3.0",
+    "@fastify/rate-limit": "^11.2.0",
+    "@fastify/swagger": "^9.8.2",
+    "@fastify/swagger-ui": "^6.1.1",
     "@hono/trpc-server": "^0.4.2",
     "@hourino/api": "workspace:*",
     "@hourino/auth": "workspace:*",
@@ -21,13 +25,18 @@
     "better-auth": "catalog:",
     "evlog": "^2.28.1",
     "fastify": "^5.12.3",
+    "trpc-to-openapi": "^3.3.0",
     "varlock": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@hourino/config": "workspace:*",
     "@types/bun": "catalog:",
+    "@types/pg": "^8.23.1",
+    "drizzle-orm": "catalog:",
+    "pg": "^8.23.0",
     "tsdown": "^0.23.0",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

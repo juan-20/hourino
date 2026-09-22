@@ -13,6 +13,10 @@
     "check-types": {
       "dependsOn": ["^check-types"]
     },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
     "dev": {
       "cache": false,
       "persistent": true
@@ -55,9 +59,13 @@
     "CI",
     "CORS_ORIGIN",
     "DATABASE_URL",
+    "GOOGLE_CLIENT_ID",
+    "GOOGLE_CLIENT_SECRET",
     "NODE_ENV",
     "POLAR_ACCESS_TOKEN",
     "POLAR_SUCCESS_URL",
+    "RESEND_API_KEY",
+    "RESEND_FROM_EMAIL",
     "VERCEL",
     "VERCEL_ENV",
     "VERCEL_PROJECT_PRODUCTION_URL",

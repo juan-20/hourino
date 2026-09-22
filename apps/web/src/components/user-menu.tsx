@@ -1,20 +1,10 @@
 import { Button } from "@hourino/ui/components/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuGroup,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@hourino/ui/components/dropdown-menu";
 import { Skeleton } from "@hourino/ui/components/skeleton";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 
 import { authClient } from "@/lib/auth-client";
 
 export default function UserMenu() {
-	const navigate = useNavigate();
 	const { data: session, isPending } = authClient.useSession();
 
 	if (isPending) {
@@ -30,33 +20,8 @@ export default function UserMenu() {
 	}
 
 	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger render={<Button variant="outline" />}>
-				{session.user.name}
-			</DropdownMenuTrigger>
-			<DropdownMenuContent className="bg-card">
-				<DropdownMenuGroup>
-					<DropdownMenuLabel>My Account</DropdownMenuLabel>
-					<DropdownMenuSeparator />
-					<DropdownMenuItem>{session.user.email}</DropdownMenuItem>
-					<DropdownMenuItem
-						onClick={() => {
-							authClient.signOut({
-								fetchOptions: {
-									onSuccess: () => {
-										navigate({
-											to: "/",
-										});
-									},
-								},
-							});
-						}}
-						variant="destructive"
-					>
-						Sign Out
-					</DropdownMenuItem>
-				</DropdownMenuGroup>
-			</DropdownMenuContent>
-		</DropdownMenu>
+		<Link to="/user">
+			<Button variant="outline">{session.user.name}</Button>
+		</Link>
 	);
 }

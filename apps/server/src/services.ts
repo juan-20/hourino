@@ -1,4 +1,4 @@
-import { createAuth } from "@hourino/auth";
+import { createAuthServices } from "@hourino/auth/composition";
 import { createDb } from "@hourino/db";
 
 import { CAPTURED_DATABASE_URL } from "./database-url";
@@ -12,4 +12,10 @@ if (!databaseUrl) {
 }
 
 export const db = createDb({ DATABASE_URL: databaseUrl });
-export const auth = createAuth(ENV, db);
+
+// `auth` must keep this exact name: `bun run auth:generate` introspects this
+// module via `auth@latest generate --config src/services.ts`, and both the raw
+// `/api/auth/*` passthrough and evlog's `createAuthMiddleware` import it.
+const { auth, services: authServices } = createAuthServices(ENV, db);
+
+export { auth, authServices };
