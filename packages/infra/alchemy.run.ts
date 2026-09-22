@@ -43,22 +43,28 @@ export const databaseProviders = Layer.mergeAll(
 	Prisma.providers()
 );
 
-export const observability = Effect.gen(function* () {
-	const { stage } = yield* Alchemy.Stack;
-	const datasetName = `hourino-${stage}-logs`;
+// One shared dataset across every stage — NOT `hourino-${stage}-logs`. Axiom's
+// free/Personal plan caps an account at 3 datasets total; a per-stage dataset
+// name means every new stage (dev, preview, a teammate's name, ...) tries to
+// create a brand-new dataset, and once the account is at its cap, Axiom
+// rejects the create with a bare 400 Bad Request. Sharing one fixed dataset
+// name means later deploys update the same dataset instead of trying to
+// create a new one, regardless of how many stages get deployed.
+const SHARED_AXIOM_DATASET_NAME = "hourino-logs";
 
+export const observability = Effect.gen(function* () {
 	const dataset = yield* Axiom.Dataset("logs", {
 		description: "hourino application logs",
 		kind: "axiom:events:v1",
-		name: datasetName,
+		name: SHARED_AXIOM_DATASET_NAME,
 	});
 	const ingest = yield* Axiom.ApiToken("logs-ingest", {
 		datasetCapabilities: {
-			[datasetName]: {
+			[SHARED_AXIOM_DATASET_NAME]: {
 				ingest: ["create"],
 			},
 		},
-		name: `hourino-${stage}-logs-ingest`,
+		name: "hourino-logs-ingest",
 	});
 
 	return {
@@ -69,22 +75,7 @@ export const observability = Effect.gen(function* () {
 			AXIOM_EDGE_URL: dataset.edgeDeploymentUrl,
 		},
 	};
-}).pipe(
-	// Axiom is optional remote log shipping, not required for the app to run —
-	// evlog's Axiom drain already degrades gracefully with no dataset/apiKey
-	// (see the "[evlog/axiom] Missing dataset or apiKey" warning). A failure
-	// provisioning it (e.g. an Axiom-side account/API issue) must never block
-	// deploying the actual server/web resources. `catchCause`, not
-	// `orElseSucceed`, is required here: Axiom's BadRequest surfaces as a
-	// defect (an unexpected thrown error), not a typed Effect failure, and
-	// `orElseSucceed` explicitly does not recover from defects.
-	Effect.catchCause(() =>
-		Effect.succeed({
-			dataset: undefined,
-			runtimeEnv: {},
-		})
-	)
-);
+});
 
 export const observabilityEnv = observability.pipe(
 	Effect.map(({ runtimeEnv }) => runtimeEnv)
@@ -157,7 +148,7 @@ export default Alchemy.Stack(
 		});
 
 		return {
-			axiomDataset: observabilityResources.dataset?.name,
+			axiomDataset: observabilityResources.dataset.name,
 			server: serverWorker.url,
 			web: webWorker.url,
 		};

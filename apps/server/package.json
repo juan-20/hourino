@@ -37,6 +37,7 @@
     "pg": "^8.23.0",
     "tsdown": "^0.23.0",
     "typescript": "catalog:",
+    "unrun": "^0.3.1",
     "vitest": "catalog:"
   }
 }
