@@ -47,6 +47,14 @@ There is no test suite/framework configured in this repo yet.
 - Bun's built-in `.env` autoloading is disabled (`bunfig.toml` → `env = false`); Varlock (`varlock/auto-load` or `varlock run`) is the only env loader. Run standalone Node/Bun tools (drizzle-kit, alchemy) from the owning app/package directory so they pick up the right schema.
 - `packages/db/.env.schema` and `packages/infra/.env.schema` `@import` vars from `apps/server/.env.schema` rather than redeclaring them — keep server's schema as the source of truth for shared vars (`DATABASE_URL`, `CORS_ORIGIN`, `BETTER_AUTH_*`, `POLAR_*`).
 
+### i18n (Paraglide JS, web only)
+
+- `apps/web` is translated with Paraglide JS: `en` (base) + `pt-BR`. Strings live in `apps/web/messages/{en,pt-BR}.json` — add every new key to **both** files. Use them via `import { m } from "@/paraglide/messages"` → `m.some_key()` (messages are functions; call them at render time, not at module scope, or the locale is frozen).
+- `apps/web/src/paraglide/` is **generated** by the Vite plugin (`paraglideVitePlugin` in `apps/web/vite.config.ts`) on `vite dev`/`vite build` — gitignored, never hand-edit. `apps/web/project.inlang/settings.json` is the only tracked file in that folder; the SDK ignores the rest itself. The two inlang plugins are local devDeps (loaded from `./node_modules/...`, not a CDN) so builds work offline.
+- Locale resolution order (`strategy` in `vite.config.ts`): `localStorage` (`PARAGLIDE_LOCALE`, set by the nav's `LocaleToggle`) → `custom-browserLanguage` (defined in `apps/web/src/lib/i18n.ts`; maps regional variants like `pt-PT`/`pt` to `pt-BR`, which Paraglide's built-in `preferredLanguage` wouldn't) → `baseLocale`. `lib/i18n.ts` must stay the first import in `main.tsx`, since the strategy has to be registered before the first `getLocale()`. `setLocale()` reloads the page; `main.tsx` syncs `<html lang>`.
+- Dates/numbers use `Intl.*` with `getLocale()` — no date library in `apps/web`.
+- Only the landing page, marketing nav, and `ModeToggle` are translated so far; migrating the rest of the web app (auth forms, app header, dashboard, toasts) is tracked on the project board.
+
 ## Architecture
 
 ### Workspace layout
@@ -87,6 +95,10 @@ Fastify (`apps/server/src/index.ts`) registers two things at the HTTP layer:
 
 The web app talks to `/trpc` via `apps/web/src/utils/trpc.ts` (a `createTRPCClient` + `createTRPCOptionsProxy` wired into TanStack Query, `credentials: "include"` for cookies) and to Better Auth via `apps/web/src/lib/auth-client.ts`. `ENV.VITE_SERVER_URL` (from `env.public.ts`) is the server origin, supplied by Alchemy at deploy time (Cloudflare Worker env → Vite build).
 
+### Web page chrome (marketing vs app)
+
+`apps/web/src/routes/__root.tsx` renders the app `Header` shell for every route **unless** a matched route sets `staticData: { chrome: "marketing" }` (typed via the `StaticDataRouteOption` augmentation in `main.tsx`). The pathless layout `routes/_marketing/route.tsx` sets it and renders its own `MarketingNav`; the public landing page is `routes/_marketing/index.tsx` (URL `/`), built from `components/landing/*` (hero + a client-only calendar demo whose pure logic lives in `lib/calendar-demo.ts`). New public/marketing pages go under `_marketing/`. This switch is temporary — moving the authenticated app under `/app` is tracked on the project board and will replace it.
+
 ### Domain model (time tracking)
 
 Aggregate roots: `User` (Better Auth's `user`, `text` id), `Project` (owned by a user), `TimeEntry` (belongs to a user + project, partitioned — see Database above), `ReportRun` (one per user+period, unique-constrained). `monthly_summaries` is a derived read-model table, not an aggregate — it's rebuilt wholesale per month by `refresh_monthly_summaries()` rather than written to directly. No `packages/api` router exists yet for these tables; `Context.db` is already threaded through `publicProcedure`/`protectedProcedure` and ready for one.
@@ -121,6 +133,6 @@ Run infra commands from `packages/infra` (`bunx alchemy dev|deploy|destroy`, or 
 
 ## Linting/formatting
 
-Biome (via the `ultracite` preset — `ultracite/biome/core`, `/react`, `/tanstack`) is configured in the root `biome.json`: tabs, double quotes, organize-imports-on-save, plus a stricter `style` rule set (no parameter reassignment, enforced `as const`, self-closing elements, etc.). Use `bun run check` / `bun run fix` rather than invoking Biome directly, and don't hand-edit generated files (`routeTree.gen.ts`, `packages/db/src/schema/auth.ts`, `src/env*.ts`).
+Biome (via the `ultracite` preset — `ultracite/biome/core`, `/react`, `/tanstack`) is configured in the root `biome.json`: tabs, double quotes, organize-imports-on-save, plus a stricter `style` rule set (no parameter reassignment, enforced `as const`, self-closing elements, etc.). Use `bun run check` / `bun run fix` rather than invoking Biome directly, and don't hand-edit generated files (`routeTree.gen.ts`, `packages/db/src/schema/auth.ts`, `src/env*.ts`, `apps/web/src/paraglide/`). Note: `biome.json` doesn't exclude `apps/web/src/paraglide/` yet, so `bun run check` lints that generated output — add `"!**/src/paraglide"` to `files.includes` (the config-protection hook blocks agents from editing `biome.json`).
 
 `bun run check` also runs `depcruise` against `.dependency-cruiser.cjs` (Biome has no path-based architectural-boundary rule, so this runs alongside it, not instead of it). It forbids any `domain/`/`application/` path importing an `infrastructure/` path, anywhere in `apps/**`/`packages/**` — matches zero files today (no such folders exist yet; that's Phase 2's job), so it can only start failing once that layering is introduced. Run `bun run check:boundaries` to check just that rule.
