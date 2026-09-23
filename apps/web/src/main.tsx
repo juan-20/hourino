@@ -2,7 +2,10 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import ReactDOM from "react-dom/client";
 
+// Side-effect import: registers the browser-language strategy before any getLocale() call.
+import "./lib/i18n";
 import Loader from "./components/loader";
+import { getLocale } from "./paraglide/runtime";
 import { routeTree } from "./routeTree.gen";
 import { queryClient, trpc } from "./utils/trpc";
 
@@ -23,7 +26,13 @@ declare module "@tanstack/react-router" {
 	interface Register {
 		router: typeof router;
 	}
+	interface StaticDataRouteOption {
+		/** Which page chrome __root renders; "marketing" routes bring their own nav. */
+		chrome?: "marketing";
+	}
 }
+
+document.documentElement.lang = getLocale();
 
 const rootElement = document.getElementById("app");
 

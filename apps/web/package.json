@@ -33,6 +33,9 @@
   },
   "devDependencies": {
     "@hourino/config": "workspace:*",
+    "@inlang/paraglide-js": "^2.25.4",
+    "@inlang/plugin-m-function-matcher": "2.2.6",
+    "@inlang/plugin-message-format": "4.4.0",
     "@tanstack/react-query-devtools": "^5.102.8",
     "@tanstack/react-router-devtools": "^1.167.1",
     "@tanstack/router-plugin": "^1.168.35",

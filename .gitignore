@@ -12,6 +12,7 @@ storybook-static
 
 # Generated files
 apps/web/src/routeTree.gen.ts
+apps/web/src/paraglide
 local.db
 local.db-*
 
@@ -33,6 +34,7 @@ local.db-*
 
 # Logs
 logs
+*.stackdump
 .evlog/
 *.log
 npm-debug.log*
