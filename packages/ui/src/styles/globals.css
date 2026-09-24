@@ -53,6 +53,29 @@
 	--brand-ink: oklch(0.3281 0.0296 22.05); /* espresso #432F2E */
 	--brand-blue: oklch(0.8756 0.0313 234.48); /* powder blue #c3DAE8 */
 	--brand-paper: oklch(0.985 0.004 60);
+	/*
+	 * Category palette: riso-ink tints for the chip behind a duration. Each
+	 * pair is text-contrast verified (light 8.1-11.4:1, dark 6.8-7.7:1). The
+	 * fills are close to the page (~1.4:1 light), so chips always carry the
+	 * standard border-2 border-border edge; keys mirror CATEGORY_COLORS in
+	 * packages/db/src/schema/categories.ts.
+	 */
+	--category-powder: oklch(0.8756 0.0313 234.48);
+	--category-powder-foreground: oklch(0.3281 0.0296 22.05);
+	--category-espresso: oklch(0.3281 0.0296 22.05);
+	--category-espresso-foreground: oklch(0.97 0.01 70);
+	--category-ochre: oklch(0.87 0.09 85);
+	--category-ochre-foreground: oklch(0.32 0.06 65);
+	--category-terracotta: oklch(0.85 0.07 40);
+	--category-terracotta-foreground: oklch(0.32 0.07 35);
+	--category-moss: oklch(0.87 0.07 145);
+	--category-moss-foreground: oklch(0.31 0.06 145);
+	--category-teal: oklch(0.87 0.055 195);
+	--category-teal-foreground: oklch(0.31 0.05 200);
+	--category-plum: oklch(0.86 0.06 320);
+	--category-plum-foreground: oklch(0.32 0.07 320);
+	--category-rose: oklch(0.87 0.06 5);
+	--category-rose-foreground: oklch(0.33 0.08 5);
 	--radius: 0.375rem;
 	--sidebar: oklch(0.985 0.004 60);
 	--sidebar-foreground: oklch(0.22 0.02 30);
@@ -93,6 +116,23 @@
 	--chart-3: oklch(0.75 0.13 75);
 	--chart-4: oklch(0.72 0.13 148);
 	--chart-5: oklch(0.68 0.11 320);
+	/* Category chips go deep-ink with light text on dark paper. */
+	--category-powder: oklch(0.42 0.06 238);
+	--category-powder-foreground: oklch(0.93 0.025 234);
+	--category-espresso: oklch(0.4 0.035 35);
+	--category-espresso-foreground: oklch(0.93 0.012 70);
+	--category-ochre: oklch(0.42 0.07 75);
+	--category-ochre-foreground: oklch(0.93 0.04 85);
+	--category-terracotta: oklch(0.42 0.08 38);
+	--category-terracotta-foreground: oklch(0.93 0.03 40);
+	--category-moss: oklch(0.4 0.07 145);
+	--category-moss-foreground: oklch(0.93 0.04 145);
+	--category-teal: oklch(0.4 0.06 195);
+	--category-teal-foreground: oklch(0.93 0.03 195);
+	--category-plum: oklch(0.4 0.08 320);
+	--category-plum-foreground: oklch(0.93 0.03 320);
+	--category-rose: oklch(0.42 0.08 5);
+	--category-rose-foreground: oklch(0.93 0.03 5);
 	--sidebar: oklch(0.23 0.014 40);
 	--sidebar-foreground: oklch(0.93 0.012 70);
 	--sidebar-primary: oklch(0.8756 0.0313 234.48);
@@ -119,6 +159,22 @@
 	--color-sidebar-primary: var(--sidebar-primary);
 	--color-sidebar-foreground: var(--sidebar-foreground);
 	--color-sidebar: var(--sidebar);
+	--color-category-powder: var(--category-powder);
+	--color-category-powder-foreground: var(--category-powder-foreground);
+	--color-category-espresso: var(--category-espresso);
+	--color-category-espresso-foreground: var(--category-espresso-foreground);
+	--color-category-ochre: var(--category-ochre);
+	--color-category-ochre-foreground: var(--category-ochre-foreground);
+	--color-category-terracotta: var(--category-terracotta);
+	--color-category-terracotta-foreground: var(--category-terracotta-foreground);
+	--color-category-moss: var(--category-moss);
+	--color-category-moss-foreground: var(--category-moss-foreground);
+	--color-category-teal: var(--category-teal);
+	--color-category-teal-foreground: var(--category-teal-foreground);
+	--color-category-plum: var(--category-plum);
+	--color-category-plum-foreground: var(--category-plum-foreground);
+	--color-category-rose: var(--category-rose);
+	--color-category-rose-foreground: var(--category-rose-foreground);
 	--color-chart-5: var(--chart-5);
 	--color-chart-4: var(--chart-4);
 	--color-chart-3: var(--chart-3);
