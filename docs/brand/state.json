@@ -1,0 +1,11 @@
+{
+  "session": "hourino-brand-2026-09",
+  "outputPath": "C:\\Programas\\hobby\\hourino\\docs\\brand",
+  "completedModules": ["40_personality-archetype.md"],
+  "skippedModules": ["10_purpose-why.md", "20_positioning.md", "30_audience-niche.md", "50_voice-tone.md", "60_narrative-story.md", "70_founder-tension.md"],
+  "skipNote": "Scoped logo-only session; skipped modules inferred from packages/ui/DESIGN.md and landing copy.",
+  "inProgressModule": null,
+  "nextModule": "10_purpose-why.md",
+  "participants": ["juan"],
+  "lastUpdated": "2026-09-23T00:00:00Z"
+}

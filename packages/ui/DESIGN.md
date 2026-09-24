@@ -30,6 +30,7 @@ Rules:
 - **`--border` (ink brown) and `--ring` (saturated blue) are deliberately different hues.** Every bordered surface already has a visible resting border, so focus needs a hue shift, not just a thicker line, to stay unambiguous — this satisfies WCAG 2.4.11 (Focus Appearance) by construction, not by afterthought.
 - **`--success` is a new token** (there was no success/positive color before this system) — use it instead of any raw `green-*` Tailwind class. Pair status colors with an icon or text label, never color alone.
 - **`--chart-1..5`** span the brand duotone plus three riso-adjacent spot colors (mustard/terracotta, plum, and the success green) for future report charts. Chart fills are decorative-contrast, not text-contrast — always pair with a legend/label, never rely on hue alone to carry meaning (color-vision-deficient users).
+- **`--brand-ink` / `--brand-blue` / `--brand-paper`** are for the logo mark only (`<LogoMark />` in `apps/web/src/components/logo.tsx`). Unlike every other token they are **deliberately not redefined under `.dark`**: the mark is a printed sticker and keeps its colors in both themes, and only its hard shadow follows `--border`. Don't use them for UI surfaces. Mark usage rules live in `docs/brand/README.md`.
 - Never introduce a raw Tailwind color-scale class (`text-red-500`, `bg-green-500`, `text-indigo-600`, etc.) anywhere in the app. Every color decision routes through a semantic token so a future rebrand only touches `globals.css`.
 
 ## Shape & structure (the neobrutalist half)
