@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <style>.s{fill:#7b5a54}@media (prefers-color-scheme:dark){.s{fill:#79635c}}</style>
+  <clipPath id="c"><rect x="4.5" y="6.5" width="36" height="35" rx="5"/></clipPath>
+  <rect class="s" x="7" y="9" width="36" height="35" rx="5"/>
+  <rect x="4.5" y="6.5" width="36" height="35" rx="5" fill="#fcf9f7"/>
+  <g clip-path="url(#c)">
+    <path d="M4.5 28Q22.5 35 40.5 28V42H4.5z" fill="#c3dae8"/>
+    <path d="M2 27Q22.5 36 43 27" stroke="#432f2e" stroke-width="3"/>
+  </g>
+  <rect x="4.5" y="6.5" width="36" height="35" rx="5" stroke="#432f2e" stroke-width="3"/>
+  <circle cx="16.5" cy="19" r="2.4" fill="#432f2e"/>
+  <circle cx="28.5" cy="19" r="2.4" fill="#432f2e"/>
+</svg>
