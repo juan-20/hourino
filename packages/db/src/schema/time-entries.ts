@@ -1,15 +1,15 @@
-import { defineRelationsPart } from "drizzle-orm";
+import { defineRelationsPart, sql } from "drizzle-orm";
 import {
 	date,
 	integer,
 	pgTable,
+	smallint,
 	text,
 	timestamp,
 	uuid,
 } from "drizzle-orm/pg-core";
 
 import { user } from "./auth";
-import { projects } from "./projects";
 
 // This table is physically RANGE-partitioned by work_date (monthly).
 // The partitioning DDL, composite PK (id, work_date), CHECK constraints and
@@ -27,15 +27,22 @@ import { projects } from "./projects";
 //   3. Column changes: hand-write the ALTER migration (ADD COLUMN on a
 //      partitioned parent propagates to all partitions automatically), then
 //      mirror the column here so drizzle-kit's snapshot stays in sync.
+//
+// Time model: local wall-clock, no timezone math. work_date is the user's
+// local calendar day; start_minute/end_minute are minutes from local
+// midnight (09:30 → 570). CHECK (0 <= start < end <= 1440) lives in SQL, so an
+// entry never crosses midnight — split it into two. minutes_worked is a
+// STORED generated column (end - start), kept for summaries/index INCLUDEs.
 export const timeEntries = pgTable("time_entries", {
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 	deletedAt: timestamp("deleted_at"),
+	description: text("description"),
+	endMinute: smallint("end_minute").notNull(),
 	id: uuid("id").notNull().defaultRandom(),
-	minutesWorked: integer("minutes_worked").notNull(),
-	notes: text("notes"),
-	projectId: uuid("project_id")
-		.notNull()
-		.references(() => projects.id, { onDelete: "restrict" }),
+	minutesWorked: integer("minutes_worked").generatedAlwaysAs(
+		sql`end_minute - start_minute`
+	),
+	startMinute: smallint("start_minute").notNull(),
 	updatedAt: timestamp("updated_at")
 		.defaultNow()
 		.$onUpdate(() => new Date())
@@ -47,13 +54,9 @@ export const timeEntries = pgTable("time_entries", {
 });
 
 export const timeEntriesRelations = defineRelationsPart(
-	{ projects, timeEntries, user },
+	{ timeEntries, user },
 	(r) => ({
 		timeEntries: {
-			project: r.one.projects({
-				from: r.timeEntries.projectId,
-				to: r.projects.id,
-			}),
 			user: r.one.user({ from: r.timeEntries.userId, to: r.user.id }),
 		},
 	})
