@@ -14,6 +14,7 @@
     "@hourino/db": "workspace:*",
     "@trpc/client": "catalog:",
     "@trpc/server": "catalog:",
+    "drizzle-orm": "catalog:",
     "trpc-to-openapi": "^3.3.0",
     "zod": "catalog:"
   },

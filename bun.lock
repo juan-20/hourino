@@ -89,6 +89,7 @@
         "tailwindcss": "catalog:",
         "typescript": "catalog:",
         "vite": "^8.2.2",
+        "vitest": "catalog:",
       },
     },
     "packages/api": {
@@ -98,6 +99,7 @@
         "@hourino/db": "workspace:*",
         "@trpc/client": "catalog:",
         "@trpc/server": "catalog:",
+        "drizzle-orm": "catalog:",
         "trpc-to-openapi": "^3.3.0",
         "zod": "catalog:",
       },
