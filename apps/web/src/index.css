@@ -1,1 +1,70 @@
 @import "@hourino/ui/globals.css";
+
+/*
+ * Calendar period navigation (Previous / Next / Today links in
+ * components/calendar/calendar-toolbar.tsx). Only the grid
+ * (`view-transition-name: calendar-grid`) animates: a short slide in the
+ * direction of travel. The rest of the page swaps instantly so the toolbar
+ * never smears. Browsers without view transitions (or view-transition
+ * types) just navigate without animating.
+ */
+@media (prefers-reduced-motion: no-preference) {
+	::view-transition-old(root),
+	::view-transition-new(root) {
+		animation: none;
+	}
+
+	::view-transition-group(calendar-grid) {
+		animation-duration: 180ms;
+	}
+
+	html:active-view-transition-type(calendar-next)
+		::view-transition-old(calendar-grid) {
+		animation: 140ms ease-in both calendar-out-left;
+	}
+	html:active-view-transition-type(calendar-next)
+		::view-transition-new(calendar-grid) {
+		animation: 180ms cubic-bezier(0.2, 0.8, 0.2, 1) both calendar-in-right;
+	}
+	html:active-view-transition-type(calendar-prev)
+		::view-transition-old(calendar-grid) {
+		animation: 140ms ease-in both calendar-out-right;
+	}
+	html:active-view-transition-type(calendar-prev)
+		::view-transition-new(calendar-grid) {
+		animation: 180ms cubic-bezier(0.2, 0.8, 0.2, 1) both calendar-in-left;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	::view-transition-group(*),
+	::view-transition-old(*),
+	::view-transition-new(*) {
+		animation: none !important;
+	}
+}
+
+@keyframes calendar-out-left {
+	to {
+		opacity: 0;
+		transform: translateX(-24px);
+	}
+}
+@keyframes calendar-in-right {
+	from {
+		opacity: 0;
+		transform: translateX(24px);
+	}
+}
+@keyframes calendar-out-right {
+	to {
+		opacity: 0;
+		transform: translateX(24px);
+	}
+}
+@keyframes calendar-in-left {
+	from {
+		opacity: 0;
+		transform: translateX(-24px);
+	}
+}

@@ -17,7 +17,7 @@ function SessionLink() {
 	}
 
 	return session ? (
-		<Link className={buttonVariants({ variant: "outline" })} to="/dashboard">
+		<Link className={buttonVariants({ variant: "outline" })} to="/calendar">
 			{m.nav_open_dashboard()}
 		</Link>
 	) : (

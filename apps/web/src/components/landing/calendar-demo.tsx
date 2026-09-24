@@ -18,14 +18,17 @@ import {
 	type CategoryId,
 	type DayEntries,
 	dayTotal,
-	formatMinutes,
-	formatMinutesLong,
 	type MonthEntries,
 	monthTotal,
 	QUICK_ADD_MINUTES,
 	seedMonth,
-	toIsoDate,
 } from "@/lib/calendar-demo";
+import {
+	formatMinutes,
+	formatMinutesLong,
+	fromIsoDate,
+	toIsoDate,
+} from "@/lib/time-format";
 import { m } from "@/paraglide/messages";
 import { getLocale } from "@/paraglide/runtime";
 
@@ -133,11 +136,6 @@ function initState(today: Date): DemoState {
 // ---------------------------------------------------------------------------
 // Helpers & hooks
 // ---------------------------------------------------------------------------
-
-function fromIsoDate(isoDate: string): Date {
-	const [year, month, day] = isoDate.split("-").map(Number);
-	return new Date(year, month - 1, day);
-}
 
 function categoryOf(event: MouseEvent<HTMLElement>): CategoryId {
 	return event.currentTarget.dataset.category as CategoryId;

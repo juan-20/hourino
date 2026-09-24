@@ -1,7 +1,8 @@
 import { Button } from "@hourino/ui/components/button";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-import { authClient } from "@/lib/auth-client";
+import { authClient, sessionQueryOptions } from "@/lib/auth-client";
+import { queryClient } from "@/utils/trpc";
 
 export const Route = createFileRoute("/_auth/user")({
 	component: RouteComponent,
@@ -45,6 +46,10 @@ function RouteComponent() {
 					authClient.signOut({
 						fetchOptions: {
 							onSuccess: () => {
+								// The /_auth guard caches the session; drop it on sign-out.
+								queryClient.removeQueries({
+									queryKey: sessionQueryOptions.queryKey,
+								});
 								navigate({ to: "/" });
 							},
 						},

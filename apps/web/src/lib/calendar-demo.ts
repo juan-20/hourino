@@ -4,6 +4,8 @@
  * lives entirely in component state.
  */
 
+import { toIsoDate } from "./time-format";
+
 export const CATEGORY_IDS = [
 	"work",
 	"study",
@@ -19,13 +21,6 @@ export type MonthEntries = Record<string, DayEntries>;
 
 export const QUICK_ADD_MINUTES = 30;
 const MAX_MINUTES_PER_DAY = 24 * 60;
-
-const pad = (value: number) => String(value).padStart(2, "0");
-
-/** Local-calendar `YYYY-MM-DD` key for a date (not UTC, so it never shifts a day across time zones). */
-export function toIsoDate(date: Date): string {
-	return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-}
 
 /** Weeks of the month containing `date`, Sunday first; `null` pads days outside the month. */
 export function buildMonthMatrix(date: Date): (Date | null)[][] {
@@ -141,33 +136,4 @@ export function addMinutes(
 		...entries,
 		[isoDate]: { ...day, [category]: (day[category] ?? 0) + added },
 	};
-}
-
-/** Compact duration for tight cells: `45m`, `3h`, `2h30`. */
-export function formatMinutes(total: number): string {
-	const hours = Math.floor(total / 60);
-	const minutes = total % 60;
-	if (hours === 0) {
-		return `${minutes}m`;
-	}
-	return minutes === 0 ? `${hours}h` : `${hours}h${pad(minutes)}`;
-}
-
-/** Spoken duration for screen readers, e.g. "2 hours 30 minutes" / "2 horas 30 minutos". */
-export function formatMinutesLong(total: number, locale: string): string {
-	const hours = Math.floor(total / 60);
-	const minutes = total % 60;
-	const unit = (value: number, name: "hour" | "minute") =>
-		new Intl.NumberFormat(locale, {
-			style: "unit",
-			unit: name,
-			unitDisplay: "long",
-		}).format(value);
-
-	if (hours === 0) {
-		return unit(minutes, "minute");
-	}
-	return minutes === 0
-		? unit(hours, "hour")
-		: `${unit(hours, "hour")} ${unit(minutes, "minute")}`;
 }

@@ -24,7 +24,7 @@ function HeroCta() {
 	return (
 		<Link
 			className={cn(buttonVariants(), "h-11 px-5 text-sm")}
-			to={session ? "/dashboard" : "/signup"}
+			to={session ? "/calendar" : "/signup"}
 		>
 			{session ? m.nav_open_dashboard() : m.hero_cta_start()}
 		</Link>

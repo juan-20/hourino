@@ -9,7 +9,8 @@
     "dev:bare": "vite dev",
     "env:generate": "varlock codegen",
     "serve": "vite preview",
-    "start": "vite"
+    "start": "vite",
+    "test": "vitest run"
   },
   "dependencies": {
     "@hourino/api": "workspace:*",
@@ -46,6 +47,7 @@
     "postcss": "^8.5.28",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
-    "vite": "^8.2.2"
+    "vite": "^8.2.2",
+    "vitest": "catalog:"
   }
 }

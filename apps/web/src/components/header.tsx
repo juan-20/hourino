@@ -2,15 +2,13 @@ import { Link } from "@tanstack/react-router";
 
 import { m } from "@/paraglide/messages";
 
+import { LocaleToggle } from "./landing/locale-toggle";
 import { LogoMark } from "./logo";
 import { ModeToggle } from "./mode-toggle";
 import UserMenu from "./user-menu";
 
 export default function Header() {
-	const links = [
-		{ label: "Home", to: "/" },
-		{ label: "Dashboard", to: "/dashboard" },
-	] as const;
+	const links = [{ label: m.nav_calendar(), to: "/calendar" }] as const;
 
 	return (
 		<div className="border-border border-b-2">
@@ -24,12 +22,18 @@ export default function Header() {
 						<LogoMark className="size-8" />
 					</Link>
 					{links.map(({ to, label }) => (
-						<Link key={to} to={to}>
+						<Link
+							// TanStack sets aria-current="page" on the active link.
+							className="rounded-sm underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background aria-[current=page]:font-bold"
+							key={to}
+							to={to}
+						>
 							{label}
 						</Link>
 					))}
 				</nav>
 				<div className="flex items-center gap-2">
+					<LocaleToggle />
 					<ModeToggle />
 					<UserMenu />
 				</div>
