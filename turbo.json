@@ -54,11 +54,7 @@
       "cache": false,
       "interactive": true
     },
-    "destroy:dev": {
-      "cache": false,
-      "interactive": true
-    },
-    "destroy:prd": {
+    "destroy": {
       "cache": false,
       "interactive": true
     }

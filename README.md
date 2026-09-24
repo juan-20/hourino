@@ -103,22 +103,24 @@ Run standalone Node/Bun tools that use Varlock from the owning app directory so 
 
 - Target: web on Cloudflare + server on Prisma + Axiom observability
 - Configure provider accounts: `cd packages/infra && bunx alchemy profile edit`
-- Dev (stage `dev`): bun run dev
-- Deploy (stage `prd`): bun run deploy
-- Destroy: bun run destroy:dev / bun run destroy:prd
+- Dev: bun run dev
+- Deploy: bun run deploy
+- Destroy: bun run destroy
 
 `alchemy profile edit` stores the selected Axiom, Cloudflare, Neon, PlanetScale, and/or Prisma provider profiles under `~/.alchemy`; no provider-specific setup command is required by this scaffold.
 
-There are two stages: `dev` (`bun run dev`, local processes with their own Neon database) and `prd` (`bun run deploy`). The scripts pick the stage via `ALCHEMY_STAGE`; don't deploy to `dev`, because Alchemy dev mode replaces that stage's server with a local process.
+Deploys are staged and default to a personal `dev_<username>` stage. For production, run the deploy with an explicit stage from `packages/infra`:
 
-Shared secrets live in `packages/infra/.env`; per-stage values (`BETTER_AUTH_URL`, `CORS_ORIGIN`, `POLAR_SUCCESS_URL`) go in `packages/infra/.env.dev` / `.env.prd`, which override it for their stage.
+```bash
+cd packages/infra && bunx alchemy deploy --stage production
+```
 
 Alchemy creates a stage-specific Axiom dataset and a least-privilege ingest token. `dev` injects the credentials into the observed apps without writing the token to an env file.
 
 ### Production origins
 
-- Required after the first `prd` deploy: set `CORS_ORIGIN` in `packages/infra/.env.prd` to the exact deployed web origin, then deploy again.
-- Prisma + Better Auth: after the first `prd` deploy, set `BETTER_AUTH_URL` in `packages/infra/.env.prd` to the returned server URL, then deploy again.
+- Required after the first deploy: set `CORS_ORIGIN` in `apps/server/.env` to the exact deployed web origin, such as `https://app.example.com`, then deploy the server again.
+- Prisma + Better Auth: after the first deploy, set `BETTER_AUTH_URL` in `apps/server/.env` to the returned server URL, then deploy again.
 
 ## Git Hooks and Formatting
 
