@@ -11,7 +11,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 All commands run from the repo root via `turbo`, unless noted. Package manager is Bun (`bun@1.4.2`) — use `bun`, not `npm`/`pnpm`/`yarn`.
 
 - `bun install` — install deps (also runs `postinstall`, which generates `src/env.ts` for each app/package from its `.env.schema` via Varlock)
-- `bun run dev` — start all apps against Alchemy-provisioned Neon (web on :3001, server on :3000) — the cloud lane
+- `bun run dev` — start all apps against Alchemy-provisioned Neon (web on :3001, server on :3000), on the Alchemy stage `dev` — the cloud lane
+- `bun run deploy` — deploy the Alchemy stage `prd`; `bun run destroy:dev` / `destroy:prd` tear a stage down (there is deliberately no bare `destroy`)
 - `bun run dev:local` — start web + server directly (bypassing Alchemy) against the docker-compose Postgres/Redis — the local lane; see Database below
 - `bun run docker:up` / `docker:down` — start/stop the local Postgres + Redis containers (`docker-compose.yml`)
 - `bun run dev:web` — start only the web app
@@ -101,7 +102,7 @@ The authenticated app's main surface. `routes/_auth/calendar/route.tsx` is a lay
 
 ### Web page chrome (marketing vs app)
 
-`apps/web/src/routes/__root.tsx` renders the app `Header` shell for every route **unless** a matched route sets `staticData: { chrome: "marketing" }` (typed via the `StaticDataRouteOption` augmentation in `main.tsx`). The pathless layout `routes/_marketing/route.tsx` sets it and renders its own `MarketingNav`; the public landing page is `routes/_marketing/index.tsx` (URL `/`), built from `components/landing/*` (hero + a client-only calendar demo whose pure logic lives in `lib/calendar-demo.ts`). New public/marketing pages go under `_marketing/`. This switch is temporary — moving the authenticated app under `/app` is tracked on the project board and will replace it.
+`apps/web/src/routes/__root.tsx` renders the app `Header` shell for every route **unless** a matched route sets `staticData: { chrome: "marketing" }` (typed via the `StaticDataRouteOption` augmentation in `main.tsx`). The pathless layout `routes/_marketing/route.tsx` sets it and renders its own `MarketingNav`; the public landing page is `routes/_marketing/index.tsx` (URL `/`), built from `components/landing/*` (hero + a client-only calendar demo whose pure logic lives in `lib/calendar-demo.ts`). New public/marketing pages go under `_marketing/`. The auth pages (`/login`, `/signup`, `/forgot-password`, `/reset-password`) set `staticData: { chrome: "auth" }`: no app header, and they render inside `components/auth-shell.tsx` (a "Back to home" link plus a centered card). Any `chrome` value skips the header. This switch is temporary — moving the authenticated app under `/app` is tracked on the project board and will replace it.
 
 ### Domain model (time tracking)
 
@@ -123,7 +124,11 @@ Routers: `packages/api/src/routers/{categories,time-entries}.ts` (tRPC + REST mi
 - `Prisma.Compute("server", ...)` — deploys `apps/server` (Bun entrypoint) with env assembled from the above plus secrets from `Config.Redacted`
 - `Cloudflare.Website.Vite("web", ...)` — deploys `apps/web`, given the server's resolved URL as `VITE_SERVER_URL`
 
-Run infra commands from `packages/infra` (`bunx alchemy dev|deploy|destroy`, or the root `bun run deploy`/`destroy` scripts which delegate via Turbo filter). Deploys are staged; production requires `bunx alchemy deploy --stage production`. After the first deploy, `CORS_ORIGIN` and `BETTER_AUTH_URL` must be set to the real deployed origins in `apps/server/.env` and redeployed.
+There are exactly two stages, both chosen by `packages/infra`'s scripts setting `ALCHEMY_STAGE` (never Alchemy's `live_$USER`/`dev_$USER` default, which varied between shells and made URLs change between deploys):
+- **`dev`** — `bun run dev` (`alchemy dev`): its own Neon project, with server and web running as local processes.
+- **`prd`** — `bun run deploy` (`alchemy deploy`): its own Neon project, server on Prisma Compute, web on Cloudflare. The URLs stay stable across redeploys of the same stage.
+
+Never `alchemy deploy` to the `dev` stage: dev mode rewrites the stage's server state to a local process (`appId: dev:server`), so a deployed app and `alchemy dev` can't share a stage. `ALCHEMY_STAGE` is also the infra schema's Varlock `@currentEnv`, so `packages/infra/.env` holds the shared secrets and `.env.dev` / `.env.prd` (gitignored) override per stage: `BETTER_AUTH_URL`, `CORS_ORIGIN`, `POLAR_SUCCESS_URL` (localhost for dev; the deployed origins for prd, filled in after the first prd deploy and then redeployed; the Google OAuth redirect URI must match too). Run infra commands through the scripts (root or `packages/infra`), not bare `bunx alchemy`, or the stage falls back to `live_$USER`. Stages from before this split (`live_juana`, `live_unknown`, `dev_juana`) are orphans until destroyed with `bunx alchemy destroy --stage <name>` from `packages/infra`.
 
 ## Design system
 

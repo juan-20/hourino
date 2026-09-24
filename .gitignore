@@ -19,6 +19,9 @@ local.db-*
 # Environment variables
 .env
 .env*.local
+# Per-stage Alchemy overrides (packages/infra: .env.dev / .env.prd)
+.env.dev
+.env.prd
 
 # IDEs and editors
 .vscode/*

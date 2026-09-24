@@ -4,10 +4,11 @@
   "type": "module",
   "scripts": {
     "check-types": "tsc --noEmit",
-    "deploy": "alchemy deploy",
-    "destroy": "alchemy destroy",
-    "dev": "alchemy dev",
-    "logs": "alchemy logs",
+    "deploy": "ALCHEMY_STAGE=prd alchemy deploy",
+    "destroy:dev": "ALCHEMY_STAGE=dev alchemy destroy",
+    "destroy:prd": "ALCHEMY_STAGE=prd alchemy destroy",
+    "dev": "ALCHEMY_STAGE=dev alchemy dev",
+    "logs": "ALCHEMY_STAGE=prd alchemy logs",
     "profile:edit": "alchemy profile edit",
     "profile:refresh": "alchemy profile refresh"
   },
