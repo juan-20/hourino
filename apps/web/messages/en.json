@@ -96,5 +96,8 @@
   "color_teal": "Teal",
   "color_plum": "Plum",
   "color_rose": "Rose",
-  "calendar_sweep_status": "Selecting {day}, {start} to {end}, {duration}"
+  "calendar_sweep_status": "Selecting {day}, {start} to {end}, {duration}",
+  "auth_back_home": "Back to home",
+  "google_signin": "Sign in with Google",
+  "google_signup": "Sign up with Google"
 }

@@ -6,10 +6,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import z from "zod";
 
+import { AuthShell } from "@/components/auth-shell";
 import { authClient } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/forgot-password")({
 	component: RouteComponent,
+	staticData: { chrome: "auth" },
 });
 
 function RouteComponent() {
@@ -36,7 +38,7 @@ function RouteComponent() {
 	});
 
 	return (
-		<div className="grain mx-auto mt-10 w-full max-w-md p-6">
+		<AuthShell>
 			<h1 className="mb-6 text-center font-bold text-3xl">Forgot Password</h1>
 
 			<p className="mb-6 text-center text-muted-foreground text-sm">
@@ -101,6 +103,6 @@ function RouteComponent() {
 					Back to sign in
 				</Link>
 			</div>
-		</div>
+		</AuthShell>
 	);
 }

@@ -42,10 +42,11 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 });
 
 function RootComponent() {
-	// Marketing routes (see routes/_marketing/route.tsx) render their own nav instead of the app Header.
-	const isMarketing = useMatches({
+	// Marketing routes (routes/_marketing/route.tsx) and auth routes (login,
+	// signup, password reset; they use AuthShell) render without the app Header.
+	const ownChrome = useMatches({
 		select: (matches) =>
-			matches.some((match) => match.staticData.chrome === "marketing"),
+			matches.some((match) => match.staticData.chrome !== undefined),
 	});
 
 	return (
@@ -57,7 +58,7 @@ function RootComponent() {
 				disableTransitionOnChange
 				storageKey="vite-ui-theme"
 			>
-				{isMarketing ? (
+				{ownChrome ? (
 					<Outlet />
 				) : (
 					<div className="grid h-svh grid-rows-[auto_1fr]">

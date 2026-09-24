@@ -6,10 +6,12 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import z from "zod";
 
+import { AuthShell } from "@/components/auth-shell";
 import { authClient } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/reset-password")({
 	component: RouteComponent,
+	staticData: { chrome: "auth" },
 	validateSearch: z.object({
 		token: z.string(),
 	}),
@@ -47,7 +49,7 @@ function RouteComponent() {
 	});
 
 	return (
-		<div className="grain mx-auto mt-10 w-full max-w-md p-6">
+		<AuthShell>
 			<h1 className="mb-6 text-center font-bold text-3xl">Reset Password</h1>
 
 			<form
@@ -98,6 +100,6 @@ function RouteComponent() {
 					)}
 				</form.Subscribe>
 			</form>
-		</div>
+		</AuthShell>
 	);
 }

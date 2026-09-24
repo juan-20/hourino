@@ -54,7 +54,7 @@ export default function SignInForm() {
 	}
 
 	return (
-		<div className="grain mx-auto mt-10 w-full max-w-md p-6">
+		<div className="w-full">
 			<h1 className="mb-6 text-center font-bold text-3xl">Welcome Back</h1>
 
 			<form

@@ -27,8 +27,11 @@ declare module "@tanstack/react-router" {
 		router: typeof router;
 	}
 	interface StaticDataRouteOption {
-		/** Which page chrome __root renders; "marketing" routes bring their own nav. */
-		chrome?: "marketing";
+		/**
+		 * Which page chrome __root renders instead of the app header:
+		 * "marketing" routes bring their own nav, "auth" routes use AuthShell.
+		 */
+		chrome?: "auth" | "marketing";
 	}
 }
 

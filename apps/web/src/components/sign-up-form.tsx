@@ -57,7 +57,7 @@ export default function SignUpForm() {
 	}
 
 	return (
-		<div className="grain mx-auto mt-10 w-full max-w-md p-6">
+		<div className="w-full">
 			<h1 className="mb-6 text-center font-bold text-3xl">Create Account</h1>
 
 			<form
@@ -155,7 +155,7 @@ export default function SignUpForm() {
 			</form>
 
 			<div className="mt-4">
-				<GoogleSignInButton />
+				<GoogleSignInButton intent="signup" />
 			</div>
 
 			<div className="mt-4 text-center">
